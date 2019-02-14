@@ -18,13 +18,16 @@ type
   private
     wModalResult:integer;
   protected
+    wOnKillFocus:TWinHandleEvent;
   public
     constructor Create(Owner:TWinHandle);override;
     function ShowModal:integer;override;
     procedure Close;
     procedure CreatePerform;override;
     procedure ClosePerform;override;
+    procedure KillFocusPerform;override;
     property ModalResult:integer read wModalResult write wModalResult;
+    property OnKillFocus:TWinHandleEvent read wOnKillFocus write wOnKillFocus;
   end;
 
 implementation
@@ -97,6 +100,13 @@ begin
   PostMessage(hWindow, wm_quit, 0, 0);
   Parent.Enabled:=true;
   EnableWindow(Parent.Window, TRUE);
+end;
+
+procedure TWinModal.KillFocusPerform;
+begin
+  inherited;
+  if Assigned(wOnKillFocus)
+  then wOnKillFocus(self)
 end;
 
 end.
