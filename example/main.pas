@@ -1,12 +1,14 @@
 unit main;
 
 interface
-uses Windows, Messages, SysUtils, ui, uihandle, uilabel, uiform, uipanel, uiedit, uipicture, uisplit, uibutton;
+uses Windows, Messages, SysUtils, ui, uihandle, uilabel, uiform, uipanel, uiedit, uipicture, uisplit, uibutton, uilist, uicombo;
 
 type
   TAppForm=class(TWinForm)
   private
     c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17:TWinHandle;
+    c18:TWinList;
+    c19:TWinCombo;
     procedure Button1Click(Sender:TWinHandle);
     procedure Button2Click(Sender:TWinHandle);
     procedure Button3Click(Sender:TWinHandle);
@@ -27,7 +29,7 @@ begin
   c1.CreatePerform;
 
   c2:=TWinPanel.Create(c1);
-  c2.SetBounds(20,20,300,150);
+  c2.SetBounds(20,20,300,250);
   c2.Align:=alLeft;
   c2.CreatePerform;
 
@@ -45,6 +47,33 @@ begin
   c5.SetBounds(10,40,200,25);
   c5.Align:=alNone;
   c5.CreatePerform;
+
+  c18:=TWinList.Create(c2);
+  c18.name:='list1';
+  c18.Color:=clBlack;
+  c18.SetBounds(10,75,200,135);
+  c18.Align:=alNone;
+  c18.CreatePerform;
+  c18.Items.Add('item1');
+  c18.Items.Add('item2');
+  c18.Items.Add('item3');
+  c18.Items.Add('item4');
+  c18.Items.Add('item5');
+  c18.Items.Add('item6');
+  c18.Items.Add('item7');
+  c18.Items.Add('item8');
+  c18.Items.Add('item9');
+  c18.Items.Add('item10');
+  c18.Items.Add('item11');
+  c18.Items.Add('item12');
+  c18.Selected:=2;
+
+  c19:=TWinCombo.Create(c2);
+  c19.name:='combo1';
+  c19.Color:=clBlack;
+  c19.SetBounds(10,215,200,25);
+  c19.Align:=alNone;
+  c19.CreatePerform;
 
   c16:=TWinImage.Create(c2);
   c16.SetBounds(250,50,16,16);
@@ -65,7 +94,7 @@ begin
 
   c7:=TWinPanel.Create(c1);
   c7.Color:=clPanelBackground2;
-  c7.SetBounds(10,10,400,350);
+  c7.SetBounds(10,10,400,250);
   c7.Align:=alBottom;
   c7.CreatePerform;
 
@@ -76,7 +105,7 @@ begin
 
   c8:=TWinPanel.Create(c7);
   c8.Color:=clPanelBackground2;
-  c8.SetBounds(10,10,400,250);
+  c8.SetBounds(10,10,400,100);
   c8.Align:=alRight;
   c8.CreatePerform;
 
@@ -173,8 +202,9 @@ begin
   c2.CreatePerform;
 
   if f.ShowModal=MR_CLOSE
-  then MessageBox(window, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at nisl vel dolor cursus suscipit. ' +
-            'Donec et massa sollicitudin, vehicula nisi a, commodo dolor. In id auctor tellus, vel bibendum ex.', 'Lorem', MB_ICONQUESTION or MB_YESNO);
+  then MessageBox(window, 'close qwe qw eq we qw eq weqweqwe qew eqwewe         qqqqqwe qweqweqweqweqeqweqweqweqweqweqeqweqwe'+
+  'qwe close qwe qw eq we qw eq weqweqwe qew eqwewe         qqqqqwe qweqweqweqweqeqweqweqweqweqweqeqweqweqwe 5 eqweqeqweqweqwe 5eqwe'+
+  'qeqweqweqwe 5eqweqeqweqweqwe 5', 'n n n', MB_ICONQUESTION or MB_YESNO);
   c3.Text:='Comp3!';
   c3.RedrawPerform;
 end;

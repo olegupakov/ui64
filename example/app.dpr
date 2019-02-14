@@ -4,7 +4,10 @@ program app;
 uses
   windows,
   main,
-  ui, uihandle;
+  ui,
+  uihandle,
+  uilist in '..\sdk\ui\uilist.pas',
+  uicombo in '..\sdk\ui\uicombo.pas';
 
 //var f:TAppform;
 begin

@@ -289,8 +289,11 @@ procedure TWinHandle.MouseButtonDownPerform(AButton:TMouseButton; AButtonControl
 begin
   wMouseDown:=true;
   SetFocus;
-  if Assigned(fOnClick) and (AButton = mbLeft)
-  then fOnClick(self);
+  if (AButton = mbLeft)
+  then begin
+    if Assigned(fOnClick)
+    then fOnClick(self);
+  end
 end;
 
 procedure TWinHandle.MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
