@@ -25,4 +25,5 @@ __history/
 __recovery/
 *.~*
 *.stat
-dcu/*
+./dcu/*.obj
+./dcu/*.res
