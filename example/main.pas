@@ -250,7 +250,39 @@ end;
 
 procedure TAppForm.Button2Click(Sender:TWinHandle);
 //var dpix,dpiy:cardinal;
+var v:integer;
+    dc:HDC;
+    ps:PAINTSTRUCT;
 begin
+  v:=GetSystemMetrics(SM_CMONITORS);
+  c20.Lines.Insert(0, 'SM_CMONITORS '+inttostr(v));
+  v:=GetSystemMetrics(SM_CXCURSOR);
+  c20.Lines.Insert(0, 'SM_CXCURSOR '+inttostr(v));
+  v:=GetSystemMetrics(SM_CYCURSOR);
+  c20.Lines.Insert(0, 'SM_CYCURSOR '+inttostr(v));
+  v:=GetSystemMetrics(SM_CXFULLSCREEN);
+  c20.Lines.Insert(0, 'SM_CXFULLSCREEN '+inttostr(v));
+  v:=GetSystemMetrics(SM_CYFULLSCREEN);
+  c20.Lines.Insert(0, 'SM_CYFULLSCREEN '+inttostr(v));
+  v:=GetSystemMetrics(SM_CXHSCROLL);
+  c20.Lines.Insert(0, 'SM_CXHSCROLL '+inttostr(v));
+  v:=GetSystemMetrics(SM_CYHSCROLL);
+  c20.Lines.Insert(0, 'SM_CYHSCROLL '+inttostr(v));
+
+  dc:=BeginPaint(window, ps);
+  v:=GetDeviceCaps(dc, HORZSIZE);
+  c20.Lines.Insert(0, 'HORZSIZE '+inttostr(v));
+  v:=GetDeviceCaps(dc, VERTSIZE);
+  c20.Lines.Insert(0, 'VERTSIZE '+inttostr(v));
+  v:=GetDeviceCaps(dc, LOGPIXELSX);
+  c20.Lines.Insert(0, 'LOGPIXELSX '+inttostr(v));
+  v:=GetDeviceCaps(dc, LOGPIXELSY);
+  c20.Lines.Insert(0, 'LOGPIXELSY '+inttostr(v));
+  EndPaint(window, ps);
+
+//  EnumDisplayDevices(
+
+  c20.RedrawPerform;
 (*  GetDpiForMonitor(
   HMONITOR         hmonitor,
   MONITOR_DPI_TYPE dpiType,
