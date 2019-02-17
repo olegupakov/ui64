@@ -43,8 +43,8 @@ begin
   p[1].X:=r.Right-1; p[1].Y:=r.Top;
   p[2].X:=r.Right-1; p[2].Y:=r.Bottom-1;
   p[3].X:=r.Left; p[3].Y:=r.Bottom-1;
-  p[4].X:=r.Left; p[4].Y:=r.Top;
-  Polygon(dc, p, 5);
+  //p[4].X:=r.Left; p[4].Y:=r.Top;
+  Polygon(dc, p, 4);
   SelectObject(dc, fntRegular);
   SetTextColor(dc, clBlack);
   SetBkMode(dc, TRANSPARENT);

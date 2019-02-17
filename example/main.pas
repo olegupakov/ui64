@@ -1,12 +1,14 @@
 unit main;
 
 interface
-uses Windows, Messages, SysUtils, ui, uihandle, uilabel, uiform, uipanel, uiedit, uipicture, uisplit, uibutton, uilist, uicombo, uimemo;
+uses Windows, Messages, SysUtils,
+     ui, uihandle, uilabel, uiform, uipanel, uiedit, uipicture, uisplit,
+     uibutton, uilist, uicombo, uimemo, uiscroll;
 
 type
   TAppForm=class(TWinForm)
   private
-    c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c21:TWinHandle;
+    c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c21,c22:TWinHandle;
     c18:TWinList;
     c19:TWinCombo;
     c20:TWinMemo;
@@ -204,6 +206,12 @@ begin
   c20.Lines.Add('line 13');
   c20.Lines.Add('line 14');
   c20.CreatePerform;
+
+  c22:=TWinScroll.Create(c7);
+  c22.Width:=20;
+//  c22.Height:=10;
+  c22.Align:=alLeft;
+  c22.CreatePerform;
 end;
 
 procedure TAppForm.Button1Click(Sender:TWinHandle);
