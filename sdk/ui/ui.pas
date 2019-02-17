@@ -179,7 +179,7 @@ begin
     then exit;
     case AMessage of
       WM_KILLFOCUS:begin
-        frm.KillFocusPerform;
+        frm.KillFocusPerform(WParam);
         WindowProc:=0;
         exit;
       end;
@@ -266,7 +266,7 @@ begin
         exit;
       end;
       WM_KILLFOCUS:begin
-        comp.KillFocusPerform;
+        comp.KillFocusPerform(wparam);
         result:=0;
         exit;
       end;
@@ -353,7 +353,7 @@ end;
 
 procedure CreateFonts;
 begin
-  fntRegular:=CreateFont(-14,0,0,0,FW_REGULAR,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'Courier New');
+  fntRegular:=CreateFont(-14,0,0,0,FW_REGULAR,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'Lucida Console');
   fntBold:=CreateFont(-8,0,0,0,FW_BOLD,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'MS Sans Serif');
 end;
 

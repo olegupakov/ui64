@@ -1,14 +1,15 @@
 unit main;
 
 interface
-uses Windows, Messages, SysUtils, ui, uihandle, uilabel, uiform, uipanel, uiedit, uipicture, uisplit, uibutton, uilist, uicombo;
+uses Windows, Messages, SysUtils, ui, uihandle, uilabel, uiform, uipanel, uiedit, uipicture, uisplit, uibutton, uilist, uicombo, uimemo;
 
 type
   TAppForm=class(TWinForm)
   private
-    c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17:TWinHandle;
+    c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c21:TWinHandle;
     c18:TWinList;
     c19:TWinCombo;
+    c20:TWinMemo;
     procedure Button1Click(Sender:TWinHandle);
     procedure Button2Click(Sender:TWinHandle);
     procedure Button3Click(Sender:TWinHandle);
@@ -24,11 +25,13 @@ begin
   name:='form1';
 
   c1:=TWinPanel.Create(self);
+  c1.Name:='c1';
   c1.SetBounds(10,10,600,550);
   c1.Align:=alNone;
   c1.CreatePerform;
 
   c2:=TWinPanel.Create(c1);
+  c2.Name:='c2';
   c2.SetBounds(20,20,300,250);
   c2.Align:=alLeft;
   c2.CreatePerform;
@@ -79,7 +82,7 @@ begin
   c16.SetBounds(250,50,16,16);
   c16.Align:=alNone;
   c16.CreatePerform;
-  
+
   c3:=TWinSplit.Create(c1);
   c3.Width:=3;
   c3.Height:=3;
@@ -87,12 +90,14 @@ begin
   c3.CreatePerform;
 
   c4:=TWinPanel.Create(c1);
+  c4.Name:='c4';
   c4.SetBounds(20,20,250,150);
   c4.Align:=alClient;
   c4.CreatePerform;
 
 
   c7:=TWinPanel.Create(c1);
+  c7.Name:='c7';
   c7.Color:=clPanelBackground2;
   c7.SetBounds(10,10,400,250);
   c7.Align:=alBottom;
@@ -104,12 +109,14 @@ begin
   c10.CreatePerform;
 
   c8:=TWinPanel.Create(c7);
+  c8.Name:='c8';
   c8.Color:=clPanelBackground2;
-  c8.SetBounds(10,10,400,100);
+  c8.SetBounds(10,10,200,100);
   c8.Align:=alRight;
   c8.CreatePerform;
 
   c11:=TWinPanel.Create(c8);
+  c11.Name:='c11';
   c11.Color:=clPanelBackground2;
   c11.SetBounds(10,10,400,100);
   c11.Align:=alTop;
@@ -121,6 +128,7 @@ begin
   c12.CreatePerform;
 
   c13:=TWinPanel.Create(c11);
+  c13.Name:='c13';
   c13.Color:=clPanelBackground2;
   c13.SetBounds(10,10,125,100);
   c13.Align:=alLeft;
@@ -136,10 +144,11 @@ begin
   c9.Text:='Edit2';
   c9.SetBounds(10,10,100,25);
   c9.Align:=alNone;
-  c9.CreatePerform;      
+  c9.CreatePerform;
 
 
   c15:=TWinPanel.Create(self);
+  c15.Name:='c15';
   c15.Color:=clPanelBackground2;
   c15.SetBounds(10,10,400,150);
   c15.Align:=alTop;
@@ -151,14 +160,15 @@ begin
   c6.Align:=alTop;
   c6.CreatePerform;
 
-  c2:=TWinPanel.Create(self);
-  c2.Color:=clPanelBackground2;
-  c2.Height:=45;// SetBounds(15,15,100,200);
-  c2.Align:=alBottom;
-  c2.MinHeight:=45;
-  c2.CreatePerform;
+  c21:=TWinPanel.Create(self);
+  c21.Name:='c21';
+  c21.Color:=clPanelBackground2;
+  c21.Height:=45;// SetBounds(15,15,100,200);
+  c21.Align:=alBottom;
+  c21.MinHeight:=45;
+  c21.CreatePerform;
 
-  c3:=TWinButton.Create(c2);
+  c3:=TWinButton.Create(c21);
   c3.Color:=clPanelBackground1;//clButtonInactiveBackground;
   c3.SetBounds(10,10,75,25);
   c3.Align:=alNone;
@@ -166,13 +176,34 @@ begin
   c3.OnClick:=Button1Click;
   c3.CreatePerform;
 
-  c17:=TWinButton.Create(c2);
+  c17:=TWinButton.Create(c21);
   c17.Color:=clPanelBackground1;//clButtonInactiveBackground;
   c17.SetBounds(100,10,175,25);
   c17.Align:=alNone;
   c17.Text:='Comp 4';
   c17.OnClick:=Button2Click;
   c17.CreatePerform;
+
+  c20:=TWinMemo.Create(c7);
+//  c17.Color:=clPanelBackground1;//clButtonInactiveBackground;
+  c20.SetBounds(100,10,250,25);
+  c20.Align:=alLeft;
+  c20.Lines.Add('line 0');
+  c20.Lines.Add('line 1');
+  c20.Lines.Add('line 2');
+  c20.Lines.Add('line 3');
+  c20.Lines.Add('line 4');
+  c20.Lines.Add('line 5');
+  c20.Lines.Add('line 6');
+  c20.Lines.Add('line 7');
+  c20.Lines.Add('line 8');
+  c20.Lines.Add('line 9');
+  c20.Lines.Add('line 10');
+  c20.Lines.Add('line 11');
+  c20.Lines.Add('line 12');
+  c20.Lines.Add('line 13');
+  c20.Lines.Add('line 14');
+  c20.CreatePerform;
 end;
 
 procedure TAppForm.Button1Click(Sender:TWinHandle);

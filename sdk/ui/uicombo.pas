@@ -9,6 +9,7 @@ type
   TWinCombo=class(TWinComp)
   private
     frm:TWinModal;
+    c18:TWinList;
   protected
     procedure ListKillFocus(Sender:TWinHandle);
     procedure ListSelected(Sender:TWinHandle);
@@ -16,7 +17,7 @@ type
     procedure CustomPaint;override;
     procedure CreatePerform;override;
     procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);override;
-    procedure KillFocusPerform;override;
+    procedure KillFocusPerform(handle:HWND);override;
   end;
 
 implementation
@@ -59,7 +60,6 @@ end;
 
 procedure TWinCombo.MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
 var p:TPoint;
-    c18:TWinList;
 begin
   inherited;
   if AButton=mbLeft
@@ -69,7 +69,7 @@ begin
     frm.ExStyle:=WS_EX_COMPOSITED;
     frm.Style:=WS_POPUP or WS_VISIBLE;
     frm.SetBounds(p.X-x,p.Y-y+height,width,150);
-    frm.OnKillFocus:=ListKillFocus;
+//    frm.OnKillFocus:=ListKillFocus;
     frm.CreatePerform;
     c18:=TWinList.Create(frm);
     c18.name:='list1';
@@ -91,17 +91,21 @@ begin
     c18.Items.Add('item 11');
     c18.Items.Add('item 12');
     frm.SizePerform;
+    SetFocus;
   end
 end;
 
-procedure TWinCombo.KillFocusPerform;
+procedure TWinCombo.KillFocusPerform(handle:HWND);
 begin
   inherited;
+  if (frm<>nil)and(handle<>frm.Window)and(c18<>nil)and(handle<>c18.Window)
+  then frm.hide
 end;
 
 procedure TWinCombo.ListKillFocus(Sender:TWinHandle);
 begin
-  frm.Hide; // TODO destroy
+  //frm.Hide; // TODO destroy
+  //SetFocus;
 end;
 
 procedure TWinCombo.ListSelected(Sender:TWinHandle);
@@ -109,7 +113,9 @@ var L:TWinList;
 begin
   L:=TWinList(Sender);
   text:=L.Items[L.Selected];
-  RedrawPerform
+  RedrawPerform;
+  frm.hide;
+  SetFocus;
 end;
 
 end.

@@ -25,7 +25,7 @@ type
     procedure Close;
     procedure CreatePerform;override;
     procedure ClosePerform;override;
-    procedure KillFocusPerform;override;
+    procedure KillFocusPerform(handle:HWND);override;
     property ModalResult:integer read wModalResult write wModalResult;
     property OnKillFocus:TWinHandleEvent read wOnKillFocus write wOnKillFocus;
   end;

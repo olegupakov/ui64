@@ -5,9 +5,7 @@ uses
   windows,
   main,
   ui,
-  uihandle,
-  uilist in '..\sdk\ui\uilist.pas',
-  uicombo in '..\sdk\ui\uicombo.pas';
+  uihandle;
 
 //var f:TAppform;
 begin

@@ -21,7 +21,7 @@ type
     procedure MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);override;
     procedure KeyCharPerform(keychar:cardinal);override;
     procedure SetFocusPerform;override;
-    procedure KillFocusPerform;override;
+    procedure KillFocusPerform(handle:HWND);override;
   end;
 
 implementation

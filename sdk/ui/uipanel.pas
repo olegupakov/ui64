@@ -41,7 +41,7 @@ begin
   PolyLine(dc, p, 3);
   SetTextColor(dc, clBlack);
   SetBkMode(dc, TRANSPARENT);
-  DrawText(dc, pchar(inttostr(Left)+':'+inttostr(Top)), -1, r, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+  DrawText(dc, pchar(name+' '+inttostr(Left)+':'+inttostr(Top)), -1, r, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
   EndPaint(hWindow, ps);
 end;
 

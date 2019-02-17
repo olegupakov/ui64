@@ -60,7 +60,7 @@ type
     procedure MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
     procedure MouseButtonDblDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
     procedure SetFocusPerform;virtual;
-    procedure KillFocusPerform;virtual;
+    procedure KillFocusPerform(handle:HWND);virtual;
     procedure ClosePerform;virtual;
     procedure CapturePerform(AWindow:HWND);virtual;
     procedure KeyCharPerform(keychar:cardinal);virtual;
