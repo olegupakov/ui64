@@ -86,8 +86,13 @@ uses Messages, SysUtils, Types, uihandle;
 
 {$R ui.res}
 
+{$IFDEF CPU64}
+function GetWindowLongPtr; external user32 name 'GetWindowLongPtrA';
+function SetWindowLongPtr; external user32 name 'SetWindowLongPtrA';
+{$ELSE}
 function GetWindowLongPtr; external user32 name 'GetWindowLongA';
 function SetWindowLongPtr; external user32 name 'SetWindowLongA';
+{$ENDIF}
 function SetDCBrushColor; external gdi32 name 'SetDCBrushColor';
 function SetDCPenColor; external gdi32 name 'SetDCPenColor';
 
@@ -186,13 +191,13 @@ begin
       WM_CLOSE:begin
         frm.ClosePerform;
       end;
-      WM_MOUSEACTIVATE:Begin
+ (*     WM_MOUSEACTIVATE:Begin
         if not frm.Enabled
         then begin
           WindowProc:=MA_NOACTIVATEANDEAT;
           exit;
         end;
-      end;
+      end;*)
       wm_char:begin
         frm.KeyCharPerform(wparam);
         WindowProc:=0;
@@ -207,14 +212,16 @@ begin
          Exit;
      //   end;
       end;
-      wm_keyup:begin
+//      wm_keyup
+//      WM_SYSKEYDOWN
+      WM_SYSCHAR:begin
         // get focused comp
-  //      if wparam=65
-    //    then begin
-      //   MessageBox(0, pchar('keyup '+inttostr(wparam)+' '+inttostr(lparam)), nil, mb_Ok);
+        if wparam<>18
+        then begin
+         MessageBox(0, pchar('keyup '+inttostr(wparam)+' '+inttostr(lparam)), nil, mb_Ok);
          WindowProc:=0;
          Exit;
-     //   end;
+        end;
       end;
   //    wm_create:begin
   //    end;
@@ -353,13 +360,14 @@ end;
 
 procedure CreateFonts;
 begin
-  fntRegular:=CreateFont(-14,0,0,0,FW_REGULAR,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'Lucida Console');
-  fntBold:=CreateFont(-8,0,0,0,FW_BOLD,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'MS Sans Serif');
+  fntRegular:=CreateFont(-16,0,0,0,FW_REGULAR,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'Courier New');
+  fntBold:=CreateFont(-16,0,0,0,FW_BOLD,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'Courier New');
 end;
 
 procedure DeleteFonts;
 begin
   DeleteObject(fntRegular);
+  DeleteObject(fntBold);
 end;
 
 initialization
