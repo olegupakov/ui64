@@ -1,7 +1,8 @@
 unit ui;
 
 interface
-uses Windows;
+
+uses Windows, Types, Messages, SysUtils;
 
 const
   clWhite=$ffffff;
@@ -39,6 +40,27 @@ const
   button under mouse border 0078d7
 *)
 
+  DT_TOP = 0;
+  DT_LEFT = 0;
+  DT_CENTER = 1;
+  DT_RIGHT = 2;
+  DT_VCENTER = 4;
+  DT_BOTTOM = 8;
+  DT_WORDBREAK = $10;
+  DT_SINGLELINE = $20;
+  DT_EXPANDTABS = $40;
+  DT_TABSTOP = $80;
+  DT_NOCLIP = $100;
+  DT_EXTERNALLEADING = $200;
+  DT_CALCRECT = $400;
+  DT_NOPREFIX = $800;
+  DT_INTERNAL = $1000;
+  DT_HIDEPREFIX = $00100000;
+  DT_PREFIXONLY = $00200000;
+
+  TRANSPARENT = 1;
+  OPAQUE = 2;
+
   DC_BRUSH = 18;
   DC_PEN = 19;
 
@@ -71,6 +93,10 @@ var
   fntRegular,fntBold:HFONT; // will be initialalized
 
 type
+
+  TPoint = Types.TPoint;
+  TRect = Types.TRect;
+
   TAlign = (alNone, alTop, alBottom, alLeft, alRight, alClient);
   TMouseButton = (mbLeft, mbMiddle, mbRight, mbX1, mbX2);
 
@@ -82,7 +108,8 @@ function GetWindowLongPtr(hWnd: HWND; nIndex: Integer): pointer; stdcall;
 function SetWindowLongPtr(hWnd: HWND; nIndex: Integer; dwNewLong: pointer): pointer; stdcall;
 
 implementation
-uses Messages, SysUtils, Types, uihandle;
+
+uses uihandle;
 
 {$R ui.res}
 

@@ -33,47 +33,25 @@ begin
 end;
 
 procedure TWinEdit.CustomPaint;
-var
-  dc : hdc;
-  ps : paintstruct;
-  r : trect;
-  p : array[0..4] of tpoint;
+var r:trect;
 begin
-  GetClientRect(hWindow, r);
-  dc := BeginPaint(hWindow, ps);
-//  FillRect(dc, r, HBRUSH(COLOR_GRADIENTACTIVECAPTION+1));
-  SelectObject(dc, GetStockObject(DC_BRUSH));
-  SetDCBrushColor(dc, clWhite);
-//  FillRect(dc, r, BRUSHES[wColor]);  // SelectObject(hdc, GetStockObject(DC_BRUSH));
-  SelectObject(dc, GetStockObject(DC_PEN));
-  if wMouseOverComponent
-  then SetDCPenColor(dc, clFaceBook2)
-  else SetDCPenColor(dc, clFaceBook1);
-  p[0].X:=r.Left; p[0].Y:=r.Top;
-  p[1].X:=r.Right-1; p[1].Y:=r.Top;
-  p[2].X:=r.Right-1; p[2].Y:=r.Bottom-1;
-  p[3].X:=r.Left; p[3].Y:=r.Bottom-1;
-  p[4].X:=r.Left; p[4].Y:=r.Top;
-  Polygon(dc, p, 5);
-  SelectObject(dc, fntRegular);
-  SetTextColor(dc, clBlack);
-  SetBkMode(dc, TRANSPARENT);
+  r:=GetClientRect;
+  BeginPaint;
+  Polygon(clDkGray, bkcolor, r.Left, r.Top, r.Right-1, r.Bottom-1);
   r.Left:=r.Left+2;
-  DrawText(dc, pchar(wText), -1, r, DT_SINGLELINE or DT_LEFT or DT_VCENTER or DT_NOPREFIX);
-  EndPaint(hWindow, ps);
+  r.Right:=r.Right-3;
+  DrawText(r, text, font, color, bkcolor, TRANSPARENT, DT_SINGLELINE or DT_LEFT or DT_VCENTER or DT_NOPREFIX);
+  EndPaint;
 end;
 
 procedure TWinEdit.MouseMovePerform(AButtonControl:cardinal; x,y:integer);
 begin
   inherited;
-  //wText:='';
-  //RedrawPerform;
 end;
 
 procedure TWinEdit.MouseLeavePerform;
 begin
   inherited;
-  //RedrawPerform;
 end;
 
 procedure TWinEdit.HideKeyCursor;

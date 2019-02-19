@@ -171,7 +171,7 @@ begin
   c21.CreatePerform;
 
   c3:=TWinButton.Create(c21);
-  c3.Color:=clPanelBackground1;//clButtonInactiveBackground;
+ // c3.Color:=clPanelBackground1;//clButtonInactiveBackground;
   c3.SetBounds(10,10,75,25);
   c3.Align:=alNone;
   c3.Text:='Comp 3';
@@ -179,7 +179,7 @@ begin
   c3.CreatePerform;
 
   c17:=TWinButton.Create(c21);
-  c17.Color:=clPanelBackground1;//clButtonInactiveBackground;
+ // c17.Color:=clPanelBackground1;//clButtonInactiveBackground;
   c17.SetBounds(100,10,175,25);
   c17.Align:=alNone;
   c17.Text:='Comp 4';
@@ -251,8 +251,6 @@ end;
 procedure TAppForm.Button2Click(Sender:TWinHandle);
 //var dpix,dpiy:cardinal;
 var v:integer;
-    dc:HDC;
-    ps:PAINTSTRUCT;
 begin
   v:=GetSystemMetrics(SM_CMONITORS);
   c20.Lines.Insert(0, 'SM_CMONITORS '+inttostr(v));
@@ -269,7 +267,7 @@ begin
   v:=GetSystemMetrics(SM_CYHSCROLL);
   c20.Lines.Insert(0, 'SM_CYHSCROLL '+inttostr(v));
 
-  dc:=BeginPaint(window, ps);
+  BeginPaint;
   v:=GetDeviceCaps(dc, HORZSIZE);
   c20.Lines.Insert(0, 'HORZSIZE '+inttostr(v));
   v:=GetDeviceCaps(dc, VERTSIZE);
@@ -278,7 +276,7 @@ begin
   c20.Lines.Insert(0, 'LOGPIXELSX '+inttostr(v));
   v:=GetDeviceCaps(dc, LOGPIXELSY);
   c20.Lines.Insert(0, 'LOGPIXELSY '+inttostr(v));
-  EndPaint(window, ps);
+  EndPaint;
 
 //  EnumDisplayDevices(
 

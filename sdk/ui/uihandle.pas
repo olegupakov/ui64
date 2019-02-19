@@ -18,6 +18,12 @@ type
   protected
     wStyle,wExStyle:cardinal;
 
+    dc : hdc;
+    ps : paintstruct;
+
+
+    wFont:HFONT;
+
     // mouse
     wMouseDown:boolean;
     wMouseOverComponent:boolean;
@@ -30,7 +36,7 @@ type
     wAlign:TAlign;
     wParent:TWinHandle;
     wText:string;
-    wColor:cardinal;
+    wColor,wBkColor:cardinal;
     wCursor:cardinal;
     wEnabled:boolean;
 
@@ -66,6 +72,13 @@ type
     procedure KeyCharPerform(keychar:cardinal);virtual;
     procedure CalcTextSize(const AText:string; var AWidth, AHeight:integer);
 
+    function GetClientRect:TRect;
+    procedure BeginPaint;
+    procedure EndPaint;
+    procedure DrawText(var r:TRect; const text:string; font:HFONT; color, bkcolor:cardinal; mode:integer; style:cardinal);
+    procedure Polygon(color, bkcolor:cardinal; Left, Top, Right, Bottom:integer);
+    procedure Polyline(color:cardinal; start, count:integer; Left, Top, Right, Bottom:integer);
+
     property Parent:TWinHandle read wParent write SetParent;
     property Window:HWnd read hWindow;
     property Align:TAlign read wAlign write wAlign;
@@ -75,6 +88,7 @@ type
     property Height:integer read hHeight write hHeight;
     property MinHeight:integer read wMinHeight write wMinHeight;
     property Color:cardinal read wColor write wColor;
+    property BkColor:cardinal read wBkColor write wBkColor;
     property Cursor:cardinal read wCursor write wCursor;
     property Text:string read wText write wText;
     property Name:string read wName write wName;
@@ -82,6 +96,7 @@ type
     property ExStyle:cardinal read wExStyle write wExStyle;
     property Enabled:boolean read wEnabled write wEnabled;
     property ChildHandleList:TListEx read wChildHandleList write wChildHandleList;
+    property Font:HFONT read wFont write wFont;
     // event
     property OnClick:TWinHandleEvent read fOnClick write fOnClick;
   end;
@@ -153,7 +168,7 @@ var i:integer;
 begin
   if ChildHandleList=nil then exit;
   //
-  GetClientRect(hWindow, r);
+  r:=GetClientRect;
   // none
   for i:=0 to ChildHandleList.Count-1 do begin
     comp:=TWinHandle(ChildHandleList[i]);
@@ -221,16 +236,13 @@ begin
 end;
 
 procedure TWinHandle.CalcTextSize(const AText:string; var AWidth, AHeight:integer);
-var
-  dc : hdc;
-  ps : paintstruct;
-  r : trect;
+var r:trect;
 begin
   r.Left:=0;
   r.Top:=0;
-  dc := BeginPaint(hWindow, ps);
-  DrawText(dc, pchar(AText), -1, r, DT_SINGLELINE or DT_LEFT or DT_TOP or DT_CALCRECT);
-  EndPaint(hWindow, ps);
+  BeginPaint;
+  DrawText(r, AText, font, color, bkcolor, TRANSPARENT,  DT_SINGLELINE or DT_LEFT or DT_TOP or DT_CALCRECT);
+  EndPaint;
   AWidth:=r.Right;
   AHeight:=r.Bottom;
 end;
@@ -247,6 +259,9 @@ begin
   wExStyle:=0;
   wStyle:=0;
   wEnabled:=true;
+  wFont:=fntRegular;
+  wColor:=clBlack;
+  wBkColor:=clWhite;
 end;
 
 procedure TWinHandle.RegisterMouseLeave;
@@ -341,6 +356,60 @@ begin
   hTop:=ATop;
   hWidth:=AWidth;
   hHeight:=AHeight;
+end;
+
+// custompaint support
+
+function TWinHandle.GetClientRect:TRect;
+begin
+  windows.GetClientRect(window, result)
+end;
+
+procedure TWinHandle.BeginPaint;
+begin
+  dc:=windows.BeginPaint(window, ps)
+end;
+
+procedure TWinHandle.EndPaint;
+begin
+  windows.EndPaint(window, ps)
+end;
+
+procedure TWinHandle.DrawText(var r:TRect; const text:string; font:HFONT; color, bkcolor:cardinal; mode:integer; style:cardinal);
+begin
+  SelectObject(dc, font);
+  SetTextColor(dc, color);
+  SetBkColor(dc, bkcolor);
+  SetBkMode(dc, mode);
+  windows.DrawText(dc, pchar(text), -1, r, style);
+end;
+
+procedure TWinHandle.Polygon(color, bkcolor:cardinal; Left, Top, Right, Bottom:integer);
+var p : array[0..3] of tpoint;
+begin
+  SelectObject(dc, GetStockObject(DC_PEN));
+  SetDCPenColor(dc, color);
+  SelectObject(dc, GetStockObject(DC_BRUSH));
+  SetDCBrushColor(dc, bkcolor);
+  p[0].X:=Left;  p[0].Y:=Top;
+  p[1].X:=Right; p[1].Y:=Top;
+  p[2].X:=Right; p[2].Y:=Bottom;
+  p[3].X:=Left;  p[3].Y:=Bottom;
+  windows.Polygon(dc, p, 4);
+end;
+
+procedure TWinHandle.Polyline(color:cardinal; start, count:integer; Left, Top, Right, Bottom:integer);
+var p : array[-1..4] of tpoint;
+begin
+  SelectObject(dc, GetStockObject(DC_PEN));
+  SetDCPenColor(dc, color);
+  p[-1].X:=Left; p[-1].Y:=Bottom;
+  p[0].X:=Left;  p[0].Y:=Top;
+  p[1].X:=Right; p[1].Y:=Top;
+  p[2].X:=Right; p[2].Y:=Bottom;
+  p[3].X:=Left;  p[3].Y:=Bottom;
+  p[4].X:=Left;  p[4].Y:=Top;
+  windows.Polyline(dc, p[start], count);
 end;
 
 end.

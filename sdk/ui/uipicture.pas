@@ -66,10 +66,9 @@ end;
 
 procedure TWinImage.CustomPaint;
 var
-  dc, img : hdc;
-  ps : paintstruct;
+  img : hdc;
 begin
-  dc := BeginPaint(hWindow, ps);
+  BeginPaint;
   img:=CreateCompatibleDC(dc);
 
   SelectObject(img, wMask);
@@ -79,7 +78,7 @@ begin
   BitBlt(dc,0,0,50,50,img,0,0,SRCPAINT);
 
   DeleteDC(img);
-  EndPaint(hWindow, ps);
+  EndPaint;
 end;
 
 end.

@@ -45,40 +45,25 @@ end;
 
 procedure TWinMemo.CustomPaint;
 var
-  dc : hdc;
-  ps : paintstruct;
   r, rtxt : trect;
-  p : array[0..4] of tpoint;
   i:integer;
 begin
-  GetClientRect(hWindow, r);
-  dc := BeginPaint(hWindow, ps);
+  r:=GetClientRect;
+  BeginPaint;
 
   rtxt:=r;
-  rtxt.Left:=rtxt.Left+4;
+  rtxt.Left:=rtxt.Left+3;
   rtxt.Right:=rtxt.Right-1;
   rtxt.Top:=rtxt.Top+1;
   rtxt.Bottom:=rtxt.Top+18;
   i:=wTopItem;
   while(rtxt.Top<r.Bottom) do begin
 
-    SelectObject(dc, GetStockObject(DC_BRUSH));
-    SetDCBrushColor(dc, clWhite);
-    SelectObject(dc, GetStockObject(DC_PEN));
-    SetDCPenColor(dc, clWhite);
-    p[0].X:=rtxt.Left-3; p[0].Y:=rtxt.Top;
-    p[1].X:=rtxt.Right-1; p[1].Y:=rtxt.Top;
-    p[2].X:=rtxt.Right-1; p[2].Y:=rtxt.Bottom-1;
-    p[3].X:=rtxt.Left-3; p[3].Y:=rtxt.Bottom-1;
-    p[4].X:=rtxt.Left-3; p[4].Y:=rtxt.Top;
-    Polygon(dc, p, 5);
+    Polygon(bkcolor, bkcolor, rtxt.Left-2, rtxt.Top, rtxt.Right-1, rtxt.Bottom-1);
 
     if i<Lines.count
     then begin
-      SetTextColor(dc, clBlack);
-      SetBkColor(dc, clWhite);
-      SetBkMode(dc, OPAQUE);
-      DrawText(dc, pchar(Lines[i]), -1, rtxt, DT_SINGLELINE or DT_LEFT or DT_VCENTER);
+      DrawText(rtxt, Lines[i], font, color, bkcolor, OPAQUE, DT_SINGLELINE or DT_LEFT or DT_TOP);
     end;
 
     inc(i);
@@ -86,16 +71,9 @@ begin
     rtxt.Bottom:=rtxt.Bottom+18;
   end;
 
-  SelectObject(dc, GetStockObject(DC_PEN));
-  SetDCPenColor(dc, clDkGray);
-  p[0].X:=r.Left; p[0].Y:=r.Top;
-  p[1].X:=r.Right-1; p[1].Y:=r.Top;
-  p[2].X:=r.Right-1; p[2].Y:=r.Bottom-1;
-  p[3].X:=r.Left; p[3].Y:=r.Bottom-1;
-  p[4].X:=r.Left; p[4].Y:=r.Top;
-  Polyline(dc, p, 5);
+  Polyline(clFaceBook1, 0, 5, r.Left, r.Top, r.Right-1, r.Bottom-1);
 
-  EndPaint(hWindow, ps);
+  EndPaint;
 end;
 
 procedure TWinMemo.MouseMovePerform(AButtonControl:cardinal; x,y:integer);

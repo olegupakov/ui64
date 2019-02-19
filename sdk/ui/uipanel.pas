@@ -2,7 +2,7 @@ unit uipanel;
 
 interface
 
-uses windows, sysutils, ui, uicomp;
+uses windows, sysutils, ui, uihandle, uicomp;
 
 type
 
@@ -10,39 +10,27 @@ type
   private
   protected
   public
+    constructor Create(Owner:TWinHandle);override;
     procedure CustomPaint;override;
   end;
 
 implementation
 
-procedure TWinPanel.CustomPaint;
-var
-  dc : hdc;
-  ps : paintstruct;
-  r : trect;
-  p : array[0..4] of tpoint;
+constructor TWinPanel.Create(Owner:TWinHandle);
 begin
-  GetClientRect(hWindow, r);
-  dc := BeginPaint(hWindow, ps);
-  SelectObject(dc, GetStockObject(DC_BRUSH));
-  SetDCBrushColor(dc, clPanelBackground2);
-  SelectObject(dc, GetStockObject(DC_PEN));
-  SetDCPenColor(dc, clDkGray);
-  p[0].X:=r.Left; p[0].Y:=r.Top;
-  p[1].X:=r.Right-1; p[1].Y:=r.Top;
-  p[2].X:=r.Right-1; p[2].Y:=r.Bottom-1;
-  p[3].X:=r.Left; p[3].Y:=r.Bottom-1;
-  p[4].X:=r.Left; p[4].Y:=r.Top;
-  Polygon(dc, p, 5);
-  SetDCPenColor(dc, clWhite);
-  p[0].X:=r.Left; p[0].Y:=r.Bottom-2;
-  p[1].X:=r.Left; p[1].Y:=r.Top;
-  p[2].X:=r.Right-1; p[2].Y:=r.Top;
-  PolyLine(dc, p, 3);
-  SetTextColor(dc, clBlack);
-  SetBkMode(dc, TRANSPARENT);
-  DrawText(dc, pchar(name+' '+inttostr(Left)+':'+inttostr(Top)), -1, r, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-  EndPaint(hWindow, ps);
+  inherited Create(Owner);
+  wBkColor:=clPanelBackground2;
+end;
+
+procedure TWinPanel.CustomPaint;
+var r:trect;
+begin
+  r:=GetClientRect;
+  BeginPaint;
+  Polygon(clDkGray, bkcolor, r.Left, r.Top, r.Right-1, r.Bottom-1);
+  PolyLine(clWhite, -1, 3, r.Left, r.Top, r.Right-1, r.Bottom-2);
+//  DrawText(r, name+' '+inttostr(Left)+':'+inttostr(Top), font, color, TRANSPARENT, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+  EndPaint;
 end;
 
 end.
