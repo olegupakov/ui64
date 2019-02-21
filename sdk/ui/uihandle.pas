@@ -23,6 +23,7 @@ type
 
 
     wFont:HFONT;
+    wColor, wBkColor, wHoverColor, wHoverBkColor, wBorderColor, wHoverBorderColor:cardinal;
 
     // mouse
     wMouseDown:boolean;
@@ -36,7 +37,6 @@ type
     wAlign:TAlign;
     wParent:TWinHandle;
     wText:string;
-    wColor,wBkColor:cardinal;
     wCursor:cardinal;
     wEnabled:boolean;
 
@@ -87,8 +87,6 @@ type
     property Width:integer read hWidth write hWidth;
     property Height:integer read hHeight write hHeight;
     property MinHeight:integer read wMinHeight write wMinHeight;
-    property Color:cardinal read wColor write wColor;
-    property BkColor:cardinal read wBkColor write wBkColor;
     property Cursor:cardinal read wCursor write wCursor;
     property Text:string read wText write wText;
     property Name:string read wName write wName;
@@ -97,6 +95,12 @@ type
     property Enabled:boolean read wEnabled write wEnabled;
     property ChildHandleList:TListEx read wChildHandleList write wChildHandleList;
     property Font:HFONT read wFont write wFont;
+    property Color:cardinal read wColor write wColor;
+    property BkColor:cardinal read wBkColor write wBkColor;
+    property BorderColor:cardinal read wBorderColor write wBorderColor;
+    property HoverColor:cardinal read wHoverColor write wHoverColor;
+    property HoverBkColor:cardinal read wBkColor write wHoverBkColor;
+    property HoverBorderColor:cardinal read wHoverBorderColor write wHoverBorderColor;
     // event
     property OnClick:TWinHandleEvent read fOnClick write fOnClick;
   end;
@@ -107,6 +111,25 @@ var MainWinForm:TWinHandle;
     //KeyboardLanguage:cardinal;
 
 implementation
+
+constructor TWinHandle.Create(Owner:TWinHandle);
+begin
+  inherited Create;
+  SetParent(Owner);
+  wTrackingMouse:=false;
+  wMouseOverComponent:=false;
+  wMouseDown:=false;
+  wCursor:=crArrow;
+  fOnClick:=nil;
+  wExStyle:=0;
+  wStyle:=0;
+  wEnabled:=true;
+  wFont:=fntRegular;
+  wColor:=clBlack;
+  wBkColor:=clWhite;
+  wHoverColor:=clBlack;
+  wHoverBkColor:=clWhite;
+end;
 
 function CreateMainWindow(AMainWinForm:TWinHandle; AText:string):TWinHandle;
 begin
@@ -247,23 +270,6 @@ begin
   AHeight:=r.Bottom;
 end;
 
-constructor TWinHandle.Create(Owner:TWinHandle);
-begin
-  inherited Create;
-  SetParent(Owner);
-  wTrackingMouse:=false;
-  wMouseOverComponent:=false;
-  wMouseDown:=false;
-  wCursor:=crArrow;
-  fOnClick:=nil;
-  wExStyle:=0;
-  wStyle:=0;
-  wEnabled:=true;
-  wFont:=fntRegular;
-  wColor:=clBlack;
-  wBkColor:=clWhite;
-end;
-
 procedure TWinHandle.RegisterMouseLeave;
 begin
   if not wTrackingMouse
@@ -306,6 +312,7 @@ begin
   SetFocus;
   if (AButton = mbLeft)
   then begin
+    RedrawPerform;
     if Assigned(fOnClick)
     then fOnClick(self);
   end

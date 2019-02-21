@@ -11,6 +11,8 @@ const
   //      $c8d0d4
   clGray98=$fafafa;
 //      $e2e1e1
+  clGray25=$404040;
+
   clButton=$7dba5f;
 
   clDkGray=$808080;
@@ -27,8 +29,13 @@ const
   clPanelBackground1=$eeeeee;
 //  clPanelBackground1=$ededf1;
 //  clPanelBackground1=$b4beb0;
-//  clPanelBackground2=$dddddd;
+  //clPanelBackground2=$dddddd;
+
   clPanelBackground2=$c8d0d4;
+
+//  clPanelBackground2=$e5e5e5;
+//  clPanelBackground2=$e5e5e5;
+
   clButtonInactiveBackground=$e1e1e1;
   clButtonInactiveBorder=$adadad;
 
@@ -82,7 +89,7 @@ const
   MR_CANCEL = 2; // cancel close
   MR_CLOSE = 3; // just close
 
-  CW_USEDEFAULT:CARDINAL=$80000000;
+  //CW_USEDEFAULT:CARDINAL=$80000000;
 
   CUSTOM_WIN  = 'CustomWindow';
   CUSTOM_COMP = 'CustomComponent';
@@ -101,6 +108,8 @@ type
   TMouseButton = (mbLeft, mbMiddle, mbRight, mbX1, mbX2);
 
 procedure ProcessMessages;
+
+function ifthen(Condition: Boolean; ThenExpr, ElseExpr: cardinal):cardinal;
 
 function SetDCBrushColor(DC: HDC; Color: COLORREF): COLORREF; stdcall;
 function SetDCPenColor(DC: HDC; Color: COLORREF): COLORREF; stdcall;
@@ -122,6 +131,11 @@ function SetWindowLongPtr; external user32 name 'SetWindowLongA';
 {$ENDIF}
 function SetDCBrushColor; external gdi32 name 'SetDCBrushColor';
 function SetDCPenColor; external gdi32 name 'SetDCPenColor';
+
+function ifthen(Condition: Boolean; ThenExpr, ElseExpr: cardinal):cardinal;
+begin
+  if condition then result:=ThenExpr else result:=ElseExpr;
+end;
 
 function MouseCustomProc(comp:TWinHandle;AMessage: UINT; WParam : WPARAM; LParam: LPARAM):boolean;
 var

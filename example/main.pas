@@ -233,7 +233,7 @@ begin
   c1.CreatePerform;
 
   c2:=TWinButton.Create(f);
-  c2.Color:=clPanelBackground1;//clButtonInactiveBackground;
+  //c2.Color:=clPanelBackground1;//clButtonInactiveBackground;
   c2.SetBounds(10,45,75,25);
   c2.Align:=alNone;
   c2.Text:='Cancel';

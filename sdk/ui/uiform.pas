@@ -37,10 +37,10 @@ begin
   inherited Create(Owner);
   wExStyle:=WS_EX_COMPOSITED or WS_EX_LAYERED or WS_EX_NOINHERITLAYOUT;
   wStyle:=WS_OVERLAPPEDWINDOW;
-  hLeft:=cw_UseDefault;
-  hTop:=cw_UseDefault;
-  hWidth:=cw_UseDefault;
-  hHeight:=cw_UseDefault;
+  hLeft:=50;
+  hTop:=50;
+  hWidth:=800;
+  hHeight:=640;
 end;
 
 procedure TWinForm.CreatePerform;

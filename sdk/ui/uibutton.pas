@@ -23,8 +23,13 @@ implementation
 constructor TWinButton.Create(Owner:TWinHandle);
 begin
   inherited Create(Owner);
-  wBkColor:=clPanelBackground2;
-  wColor:=clBlack;
+  wFont:=fntBold;
+  wColor:=clWhite;
+  wBkColor:=clFaceBook1;
+  wBorderColor:=clFaceBook1;
+  wHoverColor:=clWhite;
+  wHoverBkColor:=clFaceBook1;
+  wHoverBorderColor:=clWhite;
 end;
 
 procedure TWinButton.CustomPaint;
@@ -32,17 +37,12 @@ var r:trect;
 begin
   r:=GetClientRect;
   BeginPaint;
-  Polygon(color, bkcolor, r.Left, r.Top, r.Right-1, r.Bottom-1);
-//  PolyLine(clWhite, -1, 3, r.Left, r.Top, r.Right-1, r.Bottom-2);
-//  if wMouseOverComponent
-//  then SetDCPenColor(dc, clBlack)
-//  else SetDCPenColor(dc, clFaceBook1);
-//  PolyLine(clBlack, -1, 3, r.Left, r.Top-1, r.Right-1, r.Bottom-1);
-//  if wMouseOverComponent
-//  then SetTextColor(dc, clBlack)
-//  else SetTextColor(dc, clFaceBook1);
- // SetBkMode(dc, TRANSPARENT);
-  DrawText(r, text, font, color, bkcolor, TRANSPARENT, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+  Polygon(ifthen(wMouseOverComponent, HoverBorderColor, BorderColor),
+          ifthen(wMouseOverComponent, ifthen(wMouseDown, clFaceBook2, HoverBkColor), BkColor),
+          r.Left, r.Top, r.Right-1, r.Bottom-1);
+  DrawText(r, text, font,
+           ifthen(wMouseOverComponent, HoverColor, Color), 0,
+           TRANSPARENT, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
   EndPaint;
 end;
 
