@@ -399,10 +399,15 @@ begin
   crSizeWE:=LoadCursor(0, IDC_SIZEWE);
 end;
 
+function muldiv(a,b,c:cardinal):cardinal;
+begin
+  result:=(a*b) div c
+end;
+
 procedure CreateFonts;
 begin
-  fntRegular:=CreateFont(-16,0,0,0,FW_REGULAR,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'Courier New');
-  fntBold:=CreateFont(-16,0,0,0,FW_BOLD,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'Courier New');
+  fntRegular:=CreateFont(-muldiv(12,96,72),0,0,0,FW_REGULAR,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'Courier New');
+  fntBold:=CreateFont(-muldiv(12,96,72),0,0,0,FW_BOLD,0,0,0,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,NONANTIALIASED_QUALITY,DEFAULT_PITCH,'Courier New');
 end;
 
 procedure DeleteFonts;

@@ -250,34 +250,36 @@ end;
 
 procedure TAppForm.Button2Click(Sender:TWinHandle);
 //var dpix,dpiy:cardinal;
-var v:integer;
+var v,v1,v2,h1,h2:integer;
 begin
   v:=GetSystemMetrics(SM_CMONITORS);
   c20.Lines.Insert(0, 'SM_CMONITORS '+inttostr(v));
-  v:=GetSystemMetrics(SM_CXCURSOR);
-  c20.Lines.Insert(0, 'SM_CXCURSOR '+inttostr(v));
-  v:=GetSystemMetrics(SM_CYCURSOR);
-  c20.Lines.Insert(0, 'SM_CYCURSOR '+inttostr(v));
-  v:=GetSystemMetrics(SM_CXFULLSCREEN);
-  c20.Lines.Insert(0, 'SM_CXFULLSCREEN '+inttostr(v));
-  v:=GetSystemMetrics(SM_CYFULLSCREEN);
-  c20.Lines.Insert(0, 'SM_CYFULLSCREEN '+inttostr(v));
-  v:=GetSystemMetrics(SM_CXHSCROLL);
-  c20.Lines.Insert(0, 'SM_CXHSCROLL '+inttostr(v));
-  v:=GetSystemMetrics(SM_CYHSCROLL);
-  c20.Lines.Insert(0, 'SM_CYHSCROLL '+inttostr(v));
+//  v:=GetSystemMetrics(SM_CXCURSOR);
+//  c20.Lines.Insert(0, 'SM_CXCURSOR '+inttostr(v));
+//  v:=GetSystemMetrics(SM_CYCURSOR);
+//  c20.Lines.Insert(0, 'SM_CYCURSOR '+inttostr(v));
+  h1:=GetSystemMetrics(SM_CXFULLSCREEN);
+  c20.Lines.Insert(0, 'SM_CXFULLSCREEN '+inttostr(h1));
+  v1:=GetSystemMetrics(SM_CYFULLSCREEN);
+  c20.Lines.Insert(0, 'SM_CYFULLSCREEN '+inttostr(v1));
+//  v:=GetSystemMetrics(SM_CXHSCROLL);
+//  c20.Lines.Insert(0, 'SM_CXHSCROLL '+inttostr(v));
+//  v:=GetSystemMetrics(SM_CYHSCROLL);
+//  c20.Lines.Insert(0, 'SM_CYHSCROLL '+inttostr(v));
 
   BeginPaint;
-  v:=GetDeviceCaps(dc, HORZSIZE);
-  c20.Lines.Insert(0, 'HORZSIZE '+inttostr(v));
-  v:=GetDeviceCaps(dc, VERTSIZE);
-  c20.Lines.Insert(0, 'VERTSIZE '+inttostr(v));
+  h2:=GetDeviceCaps(dc, HORZSIZE);
+  c20.Lines.Insert(0, 'HORZSIZE '+inttostr(h2));
+  v2:=GetDeviceCaps(dc, VERTSIZE);
+  c20.Lines.Insert(0, 'VERTSIZE '+inttostr(v2));
   v:=GetDeviceCaps(dc, LOGPIXELSX);
   c20.Lines.Insert(0, 'LOGPIXELSX '+inttostr(v));
   v:=GetDeviceCaps(dc, LOGPIXELSY);
   c20.Lines.Insert(0, 'LOGPIXELSY '+inttostr(v));
   EndPaint;
 
+  c20.Lines.Insert(0, 'PPI-X '+format('%8.4f',[h1*25.4/h2]));
+  c20.Lines.Insert(0, 'PPI-Y '+format('%8.4f',[v1*25.4/v2]));
 //  EnumDisplayDevices(
 
   c20.RedrawPerform;
