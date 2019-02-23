@@ -97,7 +97,7 @@ begin
   inherited;
   if wModalResult=MR_NONE
   then wModalResult:=MR_CLOSE;
-  PostMessage(hWindow, wm_quit, 0, 0);
+  PostMessage(hWindow, WM_QUIT, 0, 0);
   Parent.Enabled:=true;
   EnableWindow(Parent.Window, TRUE);
 end;

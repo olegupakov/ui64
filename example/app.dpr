@@ -4,8 +4,10 @@ program app;
 uses
   windows,
   main,
+  selectfont,
   ui,
-  uihandle;
+  uihandle,
+  uicheck;
 
 //var f:TAppform;
 begin

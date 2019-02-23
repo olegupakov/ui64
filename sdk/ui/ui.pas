@@ -109,7 +109,9 @@ type
 
 procedure ProcessMessages;
 
-function ifthen(Condition: Boolean; ThenExpr, ElseExpr: cardinal):cardinal;
+function ifthen(Condition: Boolean; ThenExpr, ElseExpr: cardinal):cardinal;overload;
+function ifthen(Condition: Boolean; ThenExpr, ElseExpr: string):string;overload;
+function muldiv(a,b,c:cardinal):cardinal;
 
 function SetDCBrushColor(DC: HDC; Color: COLORREF): COLORREF; stdcall;
 function SetDCPenColor(DC: HDC; Color: COLORREF): COLORREF; stdcall;
@@ -133,6 +135,11 @@ function SetDCBrushColor; external gdi32 name 'SetDCBrushColor';
 function SetDCPenColor; external gdi32 name 'SetDCPenColor';
 
 function ifthen(Condition: Boolean; ThenExpr, ElseExpr: cardinal):cardinal;
+begin
+  if condition then result:=ThenExpr else result:=ElseExpr;
+end;
+
+function ifthen(Condition: Boolean; ThenExpr, ElseExpr: string):string;
 begin
   if condition then result:=ThenExpr else result:=ElseExpr;
 end;
@@ -231,6 +238,12 @@ begin
       end;
       WM_CLOSE:begin
         frm.ClosePerform;
+        if MainWinForm.Window <> hWindow
+        then begin
+          frm.Hide;
+          WindowProc:=0;
+          exit
+        end;
       end;
  (*     WM_MOUSEACTIVATE:Begin
         if not frm.Enabled

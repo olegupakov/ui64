@@ -22,6 +22,7 @@ type
     procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);override;
     property Items:TStringListEx read wItems;
     property Selected:integer read wSelected write SetSelected;
+    property TopItem:integer read wTopItem write wTopItem;
     property OnSelected:TWinHandleEvent read wOnSelected write wOnSelected;
   end;
 

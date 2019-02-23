@@ -3,18 +3,20 @@ unit main;
 interface
 uses Windows, Messages, SysUtils,
      ui, uihandle, uilabel, uiform, uipanel, uiedit, uipicture, uisplit,
-     uibutton, uilist, uicombo, uimemo, uiscroll;
+     uibutton, uilist, uicombo, uimemo, uiscroll, selectfont;
 
 type
   TAppForm=class(TWinForm)
   private
-    c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c21,c22:TWinHandle;
+    c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c21,c22,c23:TWinHandle;
     c18:TWinList;
     c19:TWinCombo;
     c20:TWinMemo;
+    frm:TSelectFontForm;
     procedure Button1Click(Sender:TWinHandle);
     procedure Button2Click(Sender:TWinHandle);
     procedure Button3Click(Sender:TWinHandle);
+    procedure Button4Click(Sender:TWinHandle);
   public
     procedure CreatePerform;override;
   end;
@@ -25,7 +27,8 @@ procedure TAppForm.CreatePerform;
 begin
   inherited;
   name:='form1';
-
+  frm:=nil;
+  
   c1:=TWinPanel.Create(self);
   c1.Name:='c1';
   c1.SetBounds(10,10,600,550);
@@ -79,6 +82,13 @@ begin
   c19.SetBounds(10,215,200,25);
   c19.Align:=alNone;
   c19.CreatePerform;
+
+  c23:=TWinButton.Create(c2);
+  c23.Align:=alNone;
+  c23.text:='font';
+  c23.SetBounds(10,250,200,25);
+  c23.OnClick:=Button4Click;
+  c23.CreatePerform;
 
   c16:=TWinImage.Create(c2);
   c16.SetBounds(250,50,16,16);
@@ -298,6 +308,18 @@ begin
     ModalResult:=MR_CANCEL;
     Close
   end;
+end;
+
+procedure TAppForm.Button4Click(Sender:TWinHandle);
+begin
+  if frm=nil
+  then begin
+    frm:=TSelectFontForm.Create(self);
+    frm.text:='CreateFont';
+    frm.SetBounds(100,100,640,640);
+    frm.CreatePerform;
+  end;
+  frm.ShowModal;
 end;
 
 end.
