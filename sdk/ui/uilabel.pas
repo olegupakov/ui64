@@ -11,6 +11,7 @@ type
   public
     procedure CustomPaint;override;
     procedure CreatePerform;override;
+    procedure SetFontPerform;override;
   end;
 
 implementation
@@ -25,6 +26,13 @@ begin
 end;
 
 procedure TWinLabel.CreatePerform;
+begin
+  inherited;
+  CalcTextSize(Text, hWidth, hHeight);
+  SetPosPerform;
+end;
+
+procedure TWinLabel.SetFontPerform;
 begin
   inherited;
   CalcTextSize(Text, hWidth, hHeight);

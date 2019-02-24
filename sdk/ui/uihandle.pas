@@ -45,6 +45,7 @@ type
     fOnClick:TWinHandleEvent;
 
     procedure SetParent(AParent:TWinHandle);
+    procedure SetFont(AValue:HFONT);
     procedure RegisterMouseLeave;
   public
     constructor Create(Owner:TWinHandle);virtual;
@@ -58,6 +59,7 @@ type
     procedure SizePerform;virtual;
     procedure RedrawPerform;
     procedure SetPosPerform;
+    procedure SetFontPerform;virtual;
     procedure CustomPaint;virtual;
     procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);virtual;
     procedure MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);virtual;
@@ -94,7 +96,7 @@ type
     property ExStyle:cardinal read wExStyle write wExStyle;
     property Enabled:boolean read wEnabled write wEnabled;
     property ChildHandleList:TListEx read wChildHandleList write wChildHandleList;
-    property Font:HFONT read wFont write wFont;
+    property Font:HFONT read wFont write SetFont;
     property Color:cardinal read wColor write wColor;
     property BkColor:cardinal read wBkColor write wBkColor;
     property BorderColor:cardinal read wBorderColor write wBorderColor;
@@ -363,6 +365,16 @@ begin
   hTop:=ATop;
   hWidth:=AWidth;
   hHeight:=AHeight;
+end;
+
+procedure TWinHandle.SetFont(AValue:HFONT);
+begin
+  wFont:=AValue;
+  SetFontPerform;
+end;
+
+procedure TWinHandle.SetFontPerform;
+begin
 end;
 
 // custompaint support
