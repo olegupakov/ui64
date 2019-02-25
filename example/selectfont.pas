@@ -15,7 +15,7 @@ type
     b1:TWinButton;
     b2:TWinButton;
     lst:TWinList;
-    ch,ch1,ch2,ch3,ch4,ch5,ch6:TWinCheck;
+    ch,ch1,ch20,ch21,ch22,ch4,ch5,ch6:TWinCheck;
     procedure Button1Click(Sender:TWinHandle);
     procedure Button2Click(Sender:TWinHandle);
   public
@@ -66,43 +66,49 @@ begin
   ch1.Text:='antialiased';
   ch1.CreatePerform;
 
-  ch2:=TWinCheck.Create(self);
-  ch2.Left:=325;
-  ch2.Top:=190;
-  ch2.Text:='regular';
-  ch2.CreatePerform;
+  ch20:=TWinCheck.Create(self);
+  ch20.Left:=325;
+  ch20.Top:=190;
+  ch20.Text:='light';
+  ch20.CreatePerform;
 
-  ch3:=TWinCheck.Create(self);
-  ch3.Left:=325;
-  ch3.Top:=215;
-  ch3.Text:='bold';
-  ch3.CreatePerform;
+  ch21:=TWinCheck.Create(self);
+  ch21.Left:=325;
+  ch21.Top:=215;
+  ch21.Text:='regular';
+  ch21.CreatePerform;
+
+  ch22:=TWinCheck.Create(self);
+  ch22.Left:=325;
+  ch22.Top:=240;
+  ch22.Text:='bold';
+  ch22.CreatePerform;
 
   ch4:=TWinCheck.Create(self);
   ch4.Left:=325;
-  ch4.Top:=240;
+  ch4.Top:=340;
   ch4.Text:='italic';
   ch4.CreatePerform;
 
   ch5:=TWinCheck.Create(self);
   ch5.Left:=325;
-  ch5.Top:=265;
+  ch5.Top:=365;
   ch5.Text:='underline';
   ch5.CreatePerform;
 
   ch6:=TWinCheck.Create(self);
   ch6.Left:=325;
-  ch6.Top:=290;
+  ch6.Top:=390;
   ch6.Text:='strikeout';
   ch6.CreatePerform;
 
   edt1:=TWinEdit.Create(self);
-  edt1.SetBounds(325, 315, 100, 25);
+  edt1.SetBounds(325, 415, 100, 25);
   edt1.Text:='12';
   edt1.CreatePerform;
 
   edt2:=TWinEdit.Create(self);
-  edt2.SetBounds(325, 345, 100, 25);
+  edt2.SetBounds(325, 445, 100, 25);
   edt2.Text:='';
   edt2.CreatePerform;
 end;
@@ -144,8 +150,9 @@ begin
   if fnt<>0 then DeleteObject(fnt);
   if ch1.Checked then q:=ANTIALIASED_QUALITY else q:=NONANTIALIASED_QUALITY;
   w:=0;
-  if ch2.Checked then w:=w+FW_REGULAR;
-  if ch3.Checked then w:=w+FW_BOLD;
+  if ch20.Checked then w:=w+FW_LIGHT;
+  if ch21.Checked then w:=w+FW_REGULAR;
+  if ch22.Checked then w:=w+FW_BOLD;
   i:=0;
   if ch4.Checked then i:=1;
   u:=0;

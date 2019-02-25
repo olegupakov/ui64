@@ -55,8 +55,9 @@ end;
 constructor TWinModal.Create(Owner:TWinHandle);
 begin
   inherited Create(Owner);
-  wExStyle:=WS_EX_COMPOSITED or WS_EX_DLGMODALFRAME;
-  wStyle:=WS_BORDER or WS_POPUP or WS_SYSMENU or WS_DLGFRAME;
+  wExStyle:=WS_EX_COMPOSITED or WS_EX_LAYERED or WS_EX_DLGMODALFRAME;
+  wStyle:=WS_BORDER or WS_POPUP or WS_SYSMENU or WS_DLGFRAME
+            or WS_SIZEBOX or WS_MINIMIZEBOX or WS_MAXIMIZEBOX;
 end;
 
 procedure TWinModal.CreatePerform;
