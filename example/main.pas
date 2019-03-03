@@ -82,6 +82,11 @@ begin
   c19.SetBounds(10,215,200,25);
   c19.Align:=alNone;
   c19.CreatePerform;
+  c19.Items.Add('item 1');
+  c19.Items.Add('item 2');
+  c19.Items.Add('item 3');
+  c19.Items.Add('item 4');
+  c19.Selected:=2;
 
   c23:=TWinButton.Create(c2);
   c23.Align:=alNone;
