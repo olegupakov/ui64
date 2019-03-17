@@ -117,8 +117,8 @@ begin
   MainWinForm.Parent := nil;
   MainWinForm.CreatePerform;
   if MainWinForm.Window = 0 then begin
-    MessageBox(0, 'WinCreate failed', nil, mb_Ok);
-    halt(0);
+    //MessageBox(0, 'WinCreate failed', nil, mb_Ok);
+    //halt(0);
   end;
   result:=MainWinForm;
 end;

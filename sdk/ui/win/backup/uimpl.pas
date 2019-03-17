@@ -2,7 +2,7 @@ unit uimpl;
 
 interface
 
-uses Types, Windows, SysUtils;
+uses Types, Windows, Messages, sysutils;
 
 const
     { MessageBox() Flags }

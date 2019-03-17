@@ -68,6 +68,9 @@ const
   TRANSPARENT = 1;
   OPAQUE = 2;
 
+  DC_BRUSH = 18;
+  DC_PEN = 19;
+
   // wm_mousemove
   MK_SHIFT=$0004;    // The SHIFT key is down.
   MK_CONTROL=$0008;  // The CTRL key is down.

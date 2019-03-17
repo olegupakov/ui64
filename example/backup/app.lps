@@ -18,7 +18,7 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos Y="5"/>
+        <CursorPos X="31" Y="5"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>

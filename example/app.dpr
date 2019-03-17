@@ -1,4 +1,3 @@
-{$APPTYPE GUI}
 program app;
 
 uses
