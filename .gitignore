@@ -27,3 +27,4 @@ __recovery/
 *.stat
 ./dcu/*.obj
 ./dcu/*.res
+*/backup

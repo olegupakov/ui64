@@ -6,7 +6,7 @@ uses
   ui,
   uihandle,
   uicheck,
-  uimpl in '..\sdk\ui\win\uimpl.pas';
+  uimpl;
 
 //var f:TAppform;
 begin

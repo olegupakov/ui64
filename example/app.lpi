@@ -50,7 +50,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="..\sdk;..\sdk\ui;..\sdk\ui\win"/>
+      <OtherUnitFiles Value="..\sdk\ui\win"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
@@ -61,6 +61,11 @@
     <CodeGeneration>
       <TargetOS Value="win64"/>
     </CodeGeneration>
+    <Other>
+      <ConfigFile>
+        <CustomConfigFile Value="True"/>
+      </ConfigFile>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">
