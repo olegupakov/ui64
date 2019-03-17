@@ -11,7 +11,7 @@ type
     fnt:HFONT;
 
     lbl:TWinLabel;
-    edt,edt1,edt2:TWinEdit;
+    edt,edt1,edt2,edt3:TWinEdit;
     b1:TWinButton;
     b2:TWinButton;
     lst:TWinList;
@@ -50,8 +50,13 @@ begin
   b2.OnClick:=Button2Click;
   b2.CreatePerform;
 
+  edt3:=TWinEdit.Create(self);
+  edt3.SetBounds(10, 130, 100, 25);
+  edt3.Text:='';
+  edt3.CreatePerform;
+
   ch:=TWinCheck.Create(self);
-  ch.Left:=10;
+  ch.Left:=130;
   ch.Top:=130;
   ch.Text:='Monospace only';
   ch.CreatePerform;
@@ -117,9 +122,10 @@ function EnumFontsProc(var LogFont: ENUMLOGFONTEX; var TextMetric: TEXTMETRIC; F
 var s:string;
 begin
   with TSelectFontForm(data) do begin
-    if (not ch.Checked)or(ch.Checked)and((LogFont.elfLogFont.lfPitchAndFamily and 3) = 1)
+    s:=LogFont.elfLogFont.lfFaceName;
+    if ((not ch.Checked)or(ch.Checked)and((LogFont.elfLogFont.lfPitchAndFamily and 3) = 1))
+      and ((edt3.text='')or(pos(uppercase(edt3.text), uppercase(s))>0))
     then begin
-      s:=LogFont.elfLogFont.lfFaceName;
       if (lst.Items.Count=0)or(lst.Items[lst.Items.Count-1]<>s)
       then lst.items.add(s);
     end;

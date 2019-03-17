@@ -2,7 +2,7 @@ unit DataStorage;
 
 interface
 
-uses Classes, Windows, SysUtils, math, supportptr;
+uses Classes, SysUtils, math, supportptr;
 
 type
   PMemBlock=^TMemBlock;

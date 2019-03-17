@@ -2,7 +2,7 @@ unit uilist;
 
 interface
 
-uses windows, ui, uihandle, uicomp, datastorage;
+uses ui, uimpl, uihandle, uicomp, datastorage;
 
 type
 

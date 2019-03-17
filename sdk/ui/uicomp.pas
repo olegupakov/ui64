@@ -2,7 +2,7 @@ unit uicomp;
 
 interface
 
-uses windows, ui, uihandle;
+uses ui, uimpl, uihandle;
 
 type
 
@@ -20,17 +20,13 @@ implementation
 constructor TWinComp.Create(Owner:TWinHandle);
 begin
   inherited Create(Owner);
-  wExStyle:=WS_EX_CONTROLPARENT;
-  wStyle:=WS_CHILD or WS_VISIBLE;
+  CreateCompStyle;
 end;
 
 procedure TWinComp.CreatePerform;
 begin
   inherited;
-  hWindow := CreateWindowEx(wExStyle, CUSTOM_COMP, nil, wStyle,
-                          hLeft, hTop, hWidth, hHeight,
-                          Parent.Window, 0, 0, nil);
-  SetWindowLongPtr(hWindow, GWL_USERDATA, self);
+  CreateCompWindow;
 end;
 
 procedure TWinComp.CustomPaint;

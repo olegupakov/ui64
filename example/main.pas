@@ -1,18 +1,20 @@
 unit main;
 
 interface
-uses Windows, Messages, SysUtils,
-     ui, uihandle, uilabel, uiform, uipanel, uiedit, uipicture, uisplit,
-     uibutton, uilist, uicombo, uimemo, uiscroll, selectfont;
+uses Messages, SysUtils,
+     ui, uimpl, uihandle, uiform
+     //, uilabel, uipanel, uiedit, uipicture, uisplit,
+     //uibutton, uilist, uicombo, uimemo, uiscroll, selectfont
+     ;
 
 type
   TAppForm=class(TWinForm)
   private
     c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c21,c22,c23:TWinHandle;
-    c18:TWinList;
-    c19:TWinCombo;
-    c20:TWinMemo;
-    frm:TSelectFontForm;
+//    c18:TWinList;
+//    c19:TWinCombo;
+//    c20:TWinMemo;
+//    frm:TSelectFontForm;
     procedure Button1Click(Sender:TWinHandle);
     procedure Button2Click(Sender:TWinHandle);
     procedure Button3Click(Sender:TWinHandle);
@@ -27,8 +29,8 @@ procedure TAppForm.CreatePerform;
 begin
   inherited;
   name:='form1';
-  frm:=nil;
-  
+(*  frm:=nil;
+
   c1:=TWinPanel.Create(self);
   c1.Name:='c1';
   c1.SetBounds(10,10,600,550);
@@ -226,15 +228,16 @@ begin
   c22.Width:=20;
 //  c22.Height:=10;
   c22.Align:=alLeft;
-  c22.CreatePerform;
+  c22.CreatePerform;                  *)
 end;
 
 procedure TAppForm.Button1Click(Sender:TWinHandle);
-var f:TWinModal;
-    c1,c2:TWinHandle;
+//var f:TWinModal;
+  //  c1,c2:TWinHandle;
 begin
 //  MessageBox(0, 'click', nil, mb_Ok);
   //c5.SetFocus
+(*
   f:=TWinModal.Create(self);  //todo destroy
   f.Text:='Modal Window';
   f.SetBounds(50,50,300,300);
@@ -260,13 +263,15 @@ begin
   'qwe close qwe qw eq we qw eq weqweqwe qew eqwewe         qqqqqwe qweqweqweqweqeqweqweqweqweqweqeqweqweqwe 5 eqweqeqweqweqwe 5eqwe'+
   'qeqweqweqwe 5eqweqeqweqweqwe 5', 'n n n', MB_ICONQUESTION or MB_YESNO);
   c3.Text:='Comp3!';
-  c3.RedrawPerform;
+  c3.RedrawPerform;        *)
 end;
 
 procedure TAppForm.Button2Click(Sender:TWinHandle);
 //var dpix,dpiy:cardinal;
-var v,v1,v2,h1,h2:integer;
+var v,v1,v2,v3,h1,h2,h3:integer;
 begin
+(*
+  c20.Lines.clear;
   v:=GetSystemMetrics(SM_CMONITORS);
   c20.Lines.Insert(0, 'SM_CMONITORS '+inttostr(v));
 //  v:=GetSystemMetrics(SM_CXCURSOR);
@@ -277,10 +282,10 @@ begin
   c20.Lines.Insert(0, 'SM_CXFULLSCREEN '+inttostr(h1));
   v1:=GetSystemMetrics(SM_CYFULLSCREEN);
   c20.Lines.Insert(0, 'SM_CYFULLSCREEN '+inttostr(v1));
-//  v:=GetSystemMetrics(SM_CXHSCROLL);
-//  c20.Lines.Insert(0, 'SM_CXHSCROLL '+inttostr(v));
-//  v:=GetSystemMetrics(SM_CYHSCROLL);
-//  c20.Lines.Insert(0, 'SM_CYHSCROLL '+inttostr(v));
+  h3:=GetSystemMetrics(SM_CXSCREEN);
+  c20.Lines.Insert(0, 'SM_CXSCREEN '+inttostr(h3));
+  v3:=GetSystemMetrics(SM_CYSCREEN);
+  c20.Lines.Insert(0, 'SM_CYSCREEN '+inttostr(v3));
 
   BeginPaint;
   h2:=GetDeviceCaps(dc, HORZSIZE);
@@ -293,11 +298,12 @@ begin
   c20.Lines.Insert(0, 'LOGPIXELSY '+inttostr(v));
   EndPaint;
 
-  c20.Lines.Insert(0, 'PPI-X '+format('%8.4f',[h1*25.4/h2]));
-  c20.Lines.Insert(0, 'PPI-Y '+format('%8.4f',[v1*25.4/v2]));
+  c20.Lines.Insert(0, 'PPI-X '+format('%8.4f',[h3*25.4/h2]));
+  c20.Lines.Insert(0, 'PPI-Y '+format('%8.4f',[v3*25.4/v2]));
 //  EnumDisplayDevices(
+*)
 
-  c20.RedrawPerform;
+//  c20.RedrawPerform;
 (*  GetDpiForMonitor(
   HMONITOR         hmonitor,
   MONITOR_DPI_TYPE dpiType,
@@ -309,14 +315,17 @@ end;
 
 procedure TAppForm.Button3Click(Sender:TWinHandle);
 begin
+(*
   with TWinModal(Sender.Parent) do begin
     ModalResult:=MR_CANCEL;
     Close
   end;
+*)
 end;
 
 procedure TAppForm.Button4Click(Sender:TWinHandle);
 begin
+(*
   if frm=nil
   then begin
     frm:=TSelectFontForm.Create(self);
@@ -325,6 +334,7 @@ begin
     frm.CreatePerform;
   end;
   frm.ShowModal;
+*)
 end;
 
 end.

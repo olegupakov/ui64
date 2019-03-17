@@ -2,7 +2,7 @@ unit uicheck;
 
 interface
 
-uses ui, uicomp;
+uses ui, uimpl, uicomp;
 
 type
   TWinCheck=class(TWinComp)

@@ -11,6 +11,10 @@ type
   pint=^integer;
   pbyte=^byte;
 
+procedure MoveMemory(Destination: Pointer; Source: Pointer; Length: integer);
+procedure CopyMemory(Destination: Pointer; Source: Pointer; Length: integer);
+procedure FillMemory(Destination: Pointer; Length: integer; Fill: Byte);
+procedure ZeroMemory(Destination: Pointer; Length: integer);
 procedure PtrMOVE(Source: Pointer; Destination: Pointer; Length: integer);
 procedure PtrFILL(Destination: Pointer; Length: integer; Fill: Byte);
 function PtrINC(addr:pointer; offset:cardinal):pointer;
@@ -38,6 +42,34 @@ end;
 procedure PtrMOVE(Source: Pointer; Destination: Pointer; Length: integer);
 begin
   Move(Source^, Destination^, Length);
+end;
+
+procedure MoveMemory(Destination: Pointer; Source: Pointer; Length: integer);
+begin
+  Move(Source^, Destination^, Length);
+end;
+
+procedure CopyMemory(Destination: Pointer; Source: Pointer; Length: integer);
+begin
+  Move(Source^, Destination^, Length);
+end;
+
+procedure FillMemory(Destination: Pointer; Length: integer; Fill: Byte);
+begin
+{$IFDEF VER150}
+  FillChar(Destination^, Length, Fill);
+{$ELSE}
+  fillbyte(Destination^, Length, Fill);
+{$ENDIF}
+end;
+
+procedure ZeroMemory(Destination: Pointer; Length: integer);
+begin
+{$IFDEF VER150}
+  FillChar(Destination^, Length, 0);
+{$ELSE}
+  fillbyte(Destination^, Length, 0);
+{$ENDIF}
 end;
 
 end.

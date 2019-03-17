@@ -2,7 +2,7 @@ unit uiform;
 
 interface
 
-uses windows, messages, ui, uihandle;
+uses ui, uimpl, uihandle;
 
 type
 
@@ -14,6 +14,7 @@ type
     procedure CreatePerform;override;
   end;
 
+(*
   TWinModal=class(TWinHandle)
   private
     wModalResult:integer;
@@ -29,14 +30,14 @@ type
     property ModalResult:integer read wModalResult write wModalResult;
     property OnKillFocus:TWinHandleEvent read wOnKillFocus write wOnKillFocus;
   end;
+*)
 
 implementation
 
 constructor TWinForm.Create(Owner:TWinHandle);
 begin
   inherited Create(Owner);
-  wExStyle:=WS_EX_COMPOSITED or WS_EX_LAYERED or WS_EX_NOINHERITLAYOUT;
-  wStyle:=WS_OVERLAPPEDWINDOW;
+  CreateFormStyle;
   hLeft:=50;
   hTop:=50;
   hWidth:=800;
@@ -46,12 +47,10 @@ end;
 procedure TWinForm.CreatePerform;
 begin
   inherited;
-  hWindow := CreateWindowEx(wExStyle, CUSTOM_WIN, pchar(wText), wStyle,
-               hLeft, hTop, hWidth, hHeight,
-               0, 0, system.MainInstance, nil);
-  SetWindowLongPtr(hWindow, GWL_USERDATA, self);
+  CreateFormWindow;
 end;
 
+(*
 constructor TWinModal.Create(Owner:TWinHandle);
 begin
   inherited Create(Owner);
@@ -109,5 +108,6 @@ begin
   if Assigned(wOnKillFocus)
   then wOnKillFocus(self)
 end;
+*)
 
 end.

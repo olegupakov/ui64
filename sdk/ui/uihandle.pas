@@ -2,7 +2,7 @@ unit uihandle;
 
 interface
 
-uses windows, messages, ui, datastorage;
+uses ui, uimpl, datastorage;
 
 type
 
@@ -10,17 +10,9 @@ type
 
   TWinHandleEvent=procedure(Sender:TWinHandle) of object;
 
-  TWinHandle=class
+  TWinHandle=class(TWinHandleImpl)
   private
-    hTrackMouseEvent:TTrackMouseEvent;
-    wTrackingMouse:boolean;
-
   protected
-    wStyle,wExStyle:cardinal;
-
-    dc : hdc;
-    ps : paintstruct;
-
 
     wFont:HFONT;
     wColor, wBkColor, wHoverColor, wHoverBkColor, wBorderColor, wHoverBorderColor:cardinal;
@@ -29,14 +21,10 @@ type
     wMouseDown:boolean;
     wMouseOverComponent:boolean;
 
-    hWindow:HWnd;
-    hLeft, hTop, hWidth, hHeight : integer;
     wName:string;
     wMinHeight:integer;
 
     wAlign:TAlign;
-    wParent:TWinHandle;
-    wText:string;
     wCursor:cardinal;
     wEnabled:boolean;
 
@@ -45,20 +33,16 @@ type
     fOnClick:TWinHandleEvent;
 
     procedure SetParent(AParent:TWinHandle);
+    function GetParent:TWinHandle;
     procedure SetFont(AValue:HFONT);
-    procedure RegisterMouseLeave;
   public
     constructor Create(Owner:TWinHandle);virtual;
 
-    procedure Show(nCmdShow:integer = SW_SHOWNORMAL);virtual;
     function  ShowModal:integer;virtual;
-    procedure Hide;virtual;
     procedure SetBounds(ALeft, ATop, AWidth, AHeight : integer);
-    procedure SetFocus;virtual;
+//    procedure SetFocus;virtual;
     procedure CreatePerform;virtual;abstract;
     procedure SizePerform;virtual;
-    procedure RedrawPerform;
-    procedure SetPosPerform;
     procedure SetFontPerform;virtual;
     procedure CustomPaint;virtual;
     procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);virtual;
@@ -74,15 +58,8 @@ type
     procedure KeyCharPerform(keychar:cardinal);virtual;
     procedure CalcTextSize(const AText:string; var AWidth, AHeight:integer);
 
-    function GetClientRect:TRect;
-    procedure BeginPaint;
-    procedure EndPaint;
-    procedure DrawText(var r:TRect; const text:string; font:HFONT; color, bkcolor:cardinal; mode:integer; style:cardinal);
-    procedure Polygon(color, bkcolor:cardinal; Left, Top, Right, Bottom:integer);
-    procedure Polyline(color:cardinal; start, count:integer; Left, Top, Right, Bottom:integer);
-
-    property Parent:TWinHandle read wParent write SetParent;
     property Window:HWnd read hWindow;
+    property Parent:TWinHandle read GetParent write SetParent;
     property Align:TAlign read wAlign write wAlign;
     property Left:integer read hLeft write hLeft;
     property Top:integer read hTop write hTop;
@@ -146,16 +123,6 @@ begin
   result:=MainWinForm;
 end;
 
-procedure TWinHandle.Show(nCmdShow:integer=SW_SHOWNORMAL);
-begin
-  ShowWindow(hWindow, nCmdShow);
-end;
-
-procedure TWinHandle.Hide;
-begin
-  Show(SW_HIDE)
-end;
-
 function TWinHandle.ShowModal:integer;
 begin
   result:=MR_CLOSE
@@ -165,14 +132,9 @@ procedure TWinHandle.CustomPaint;
 begin
 end;
 
-procedure TWinHandle.RedrawPerform;
+function TWinHandle.GetParent:TWinHandle;
 begin
-  InvalidateRect(hWindow, nil, TRUE);
-end;
-
-procedure TWinHandle.SetPosPerform;
-begin
-  SetWindowPos(hWindow, 0, hLeft, hTop, hWidth, hHeight, SWP_NOZORDER);
+  result:=TWinHandle(wParent)
 end;
 
 procedure TWinHandle.SetParent(AParent:TWinHandle);
@@ -272,20 +234,6 @@ begin
   AHeight:=r.Bottom;
 end;
 
-procedure TWinHandle.RegisterMouseLeave;
-begin
-  if not wTrackingMouse
-  then begin
-    wTrackingMouse:=true;
-    hTrackMouseEvent.cbSize:=SizeOf(hTrackMouseEvent);
-    hTrackMouseEvent.dwFlags:=TME_LEAVE or TME_HOVER;
-    hTrackMouseEvent.hwndTrack:=hWindow;
-    hTrackMouseEvent.dwHoverTime:=HOVER_DEFAULT;
-    if not TrackMouseEvent(hTrackMouseEvent)
-    then wTrackingMouse:=false
-  end;
-end;
-
 procedure TWinHandle.MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);
 begin
 end;
@@ -293,7 +241,7 @@ end;
 procedure TWinHandle.MouseMovePerform(AButtonControl:cardinal; x,y:integer);
 begin
   RegisterMouseLeave;
-  SetCursor(wCursor);
+//  SetCursor(wCursor);
   if not wMouseOverComponent
   then begin
     wMouseOverComponent:=true;
@@ -311,7 +259,7 @@ end;
 procedure TWinHandle.MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
 begin
   wMouseDown:=true;
-  SetFocus;
+//  SetFocus;
   if (AButton = mbLeft)
   then begin
     RedrawPerform;
@@ -333,6 +281,7 @@ procedure TWinHandle.KeyCharPerform(keychar:cardinal);
 begin
 end;
 
+(*
 procedure TWinHandle.SetFocus;
 var h:HWND;
 begin
@@ -342,6 +291,7 @@ begin
   windows.SetFocus(hWindow);
   SetFocusPerform;
 end;
+*)
 
 procedure TWinHandle.SetFocusPerform;
 begin
@@ -375,60 +325,6 @@ end;
 
 procedure TWinHandle.SetFontPerform;
 begin
-end;
-
-// custompaint support
-
-function TWinHandle.GetClientRect:TRect;
-begin
-  windows.GetClientRect(window, result)
-end;
-
-procedure TWinHandle.BeginPaint;
-begin
-  dc:=windows.BeginPaint(window, ps)
-end;
-
-procedure TWinHandle.EndPaint;
-begin
-  windows.EndPaint(window, ps)
-end;
-
-procedure TWinHandle.DrawText(var r:TRect; const text:string; font:HFONT; color, bkcolor:cardinal; mode:integer; style:cardinal);
-begin
-  SelectObject(dc, font);
-  SetTextColor(dc, color);
-  SetBkColor(dc, bkcolor);
-  SetBkMode(dc, mode);
-  windows.DrawText(dc, pchar(text), -1, r, style);
-end;
-
-procedure TWinHandle.Polygon(color, bkcolor:cardinal; Left, Top, Right, Bottom:integer);
-var p : array[0..3] of tpoint;
-begin
-  SelectObject(dc, GetStockObject(DC_PEN));
-  SetDCPenColor(dc, color);
-  SelectObject(dc, GetStockObject(DC_BRUSH));
-  SetDCBrushColor(dc, bkcolor);
-  p[0].X:=Left;  p[0].Y:=Top;
-  p[1].X:=Right; p[1].Y:=Top;
-  p[2].X:=Right; p[2].Y:=Bottom;
-  p[3].X:=Left;  p[3].Y:=Bottom;
-  windows.Polygon(dc, p, 4);
-end;
-
-procedure TWinHandle.Polyline(color:cardinal; start, count:integer; Left, Top, Right, Bottom:integer);
-var p : array[-1..4] of tpoint;
-begin
-  SelectObject(dc, GetStockObject(DC_PEN));
-  SetDCPenColor(dc, color);
-  p[-1].X:=Left; p[-1].Y:=Bottom;
-  p[0].X:=Left;  p[0].Y:=Top;
-  p[1].X:=Right; p[1].Y:=Top;
-  p[2].X:=Right; p[2].Y:=Bottom;
-  p[3].X:=Left;  p[3].Y:=Bottom;
-  p[4].X:=Left;  p[4].Y:=Top;
-  windows.Polyline(dc, p[start], count);
 end;
 
 end.

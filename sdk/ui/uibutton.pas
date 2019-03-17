@@ -2,7 +2,7 @@ unit uibutton;
 
 interface
 
-uses windows, ui, uihandle, uicomp;
+uses ui, uimpl, uihandle, uicomp;
 
 type
 

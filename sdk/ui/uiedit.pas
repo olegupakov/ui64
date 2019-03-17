@@ -2,7 +2,7 @@ unit uiedit;
 
 interface
 
-uses windows, sysutils, ui, uicomp;
+uses sysutils, ui, uimpl, uicomp;
 
 type
 
@@ -59,15 +59,17 @@ end;
 
 procedure TWinEdit.HideKeyCursor;
 begin
-  HideCaret(hWindow);
+//  HideCaret(hWindow);
 end;
 
 procedure TWinEdit.ShowKeyCursor;
 begin
+(*
   HideCaret(hWindow);
   CreateCaret(hWindow, 0, 2, 17);
   SetCaretPos(KeyCursorX, KeyCursorY);
   ShowCaret(hWindow);
+*)
 end;
 
 procedure TWinEdit.SetFocusPerform;
