@@ -1,7 +1,7 @@
 unit main;
 
 interface
-uses Messages, SysUtils,
+uses SysUtils,
      ui, uimpl, uihandle, uiform
      //, uilabel, uipanel, uiedit, uipicture, uisplit,
      //uibutton, uilist, uicombo, uimemo, uiscroll, selectfont
