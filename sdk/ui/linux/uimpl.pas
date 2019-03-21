@@ -2,7 +2,7 @@ unit uimpl;
 
 interface
 
-uses types, sysutils, xlib, x, xutil;
+uses types, ctypes, sysutils, xlib, x, xutil;
 
 const
     { MessageBox() Flags }
@@ -70,7 +70,6 @@ type
   TWinHandleImpl=class
   private
   protected
-    Win: TWindow;
     hWindow:HWnd;
     wParent:TWinHandleImpl;
     wStyle,wExStyle:cardinal;
@@ -110,6 +109,7 @@ var
   crArrow, crHand, crIBeam, crHourGlass, crSizeNS, crSizeWE : cardinal; // will be initialalized
   fntRegular,fntBold:HFONT; // will be initialalized
 
+  green:culong;
 
 //function MessageBox(hWnd: HWND; lpText, lpCaption: PChar; uType: UINT): Integer; stdcall;
 //function SetDCBrushColor(DC: HDC; Color: COLORREF): COLORREF; stdcall;
@@ -123,55 +123,6 @@ procedure FreeUI;
 
 implementation
 
-uses uihandle;
-
-{$IFDEF CPU64}
-//function GetWindowLongPtr; external user32 name 'GetWindowLongPtrA';
-//function SetWindowLongPtr; external user32 name 'SetWindowLongPtrA';
-{$ELSE}
-//function GetWindowLongPtr; external user32 name 'GetWindowLongA';
-//function SetWindowLongPtr; external user32 name 'SetWindowLongA';
-{$ENDIF}
-//function SetDCBrushColor; external gdi32 name 'SetDCBrushColor';
-//function SetDCPenColor; external gdi32 name 'SetDCPenColor';
-
-//function MessageBox; external user32 name 'MessageBoxA';
-
-
-var
-  Display: PDisplay;
-  ScreenNum: Integer;
-  DisplayWidth, DisplayHeight: Word;
-
-  Report: TXEvent;
-
-procedure InitUI;
-begin
-  Display := XOpenDisplay(nil);
-  ScreenNum := XDefaultScreen(Display);
-  DisplayWidth := XDisplayWidth(Display, ScreenNum);
-  DisplayHeight := XDisplayHeight(Display, ScreenNum);
-
-(*
-Win := XCreateSimpleWindow(Display, XRootWindow(Display, ScreenNum),
-    50{hLeft}, 50{hTop}, 300{hWidth}, 400{hHeight}, 4{BorderWidth}, XBlackPixel(Display, ScreenNum),
-    XWhitePixel(Display, ScreenNum));
-*)
-
-//  XMapWindow(Display, Win);
-end;
-
-procedure ProcessMessages;
-begin
-  while True do begin
-    XNextEvent(Display, @Report);
-  end;
-end;
-
-procedure FreeUI;
-begin
-  XCloseDisplay(Display);
-end;
 
 procedure TWinHandleImpl.CreateFormStyle;
 begin
@@ -180,81 +131,373 @@ begin
 end;
 
 const
-  IconBitmapWidth = 20;
-  IconBitmapHeight = 20;
+  IconBitmapWidth = 16;
+  IconBitmapHeight = 16;
 
-   IconBitmapBits: packed array[1..60] of Byte = (
-   $60, $00, $01, $b0, $00, $07, $0c, $03, $00, $04, $04, $00,
-   $c2, $18, $00, $03, $30, $00, $01, $60, $00, $f1, $df, $00,
-   $c1, $f0, $01, $82, $01, $00, $02, $03, $00, $02, $0c, $00,
-   $02, $38, $00, $04, $60, $00, $04, $e0, $00, $04, $38, $00,
-   $84, $06, $00, $14, $14, $00, $0c, $34, $00, $00, $00, $00
-);
+   IconBitmapBits: packed array[1..32] of Byte = ($1f, $f8, $1f, $88, $1f, $88, $1f, $88, $1f, $88, $1f, $f8,
+   $1f, $f8, $1f, $f8, $1f, $f8, $1f, $f8, $1f, $f8, $ff, $ff,
+   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff);
+
+
+  BITMAPDEPTH = 1;
+  TOO_SMALL = 0;
+  BIG_ENOUGH = 1;
 
 var
-   IconPixmap: TPixmap;
-   SizeHints: PXSizeHints;
-   SizeList: PXIconSize;
-   WMHints: PXWMHints;
-   ClassHints: PXClassHint;
-   Count: Integer;
+  Display: PDisplay;
+  ScreenNum: Integer;
+  ProgName: String;
+
+procedure CheckMemory(P: Pointer);
+begin
+  if P = nil then
+    begin
+      Writeln(ProgName,': Failure Allocating Memory');
+      Halt(0);
+    end;
+end;
+
+procedure GetDC(Win: TWindow;var GC: TGC; FontInfo: PXFontStruct);
+const
+  DashList: packed array[1..2] of Byte = (12, 24);
+var
+  ValueMask: Cardinal;
+  Values: TXGCValues;
+  LineWidth: Cardinal;
+  LineStyle: Integer;
+  CapStyle: Integer;
+  JoinStyle: Integer;
+  DashOffset: Integer;
+  ListLength: Integer;
+begin
+  ValueMask := 0;
+  LineWidth := 1;
+  LineStyle := LineSolid; //LineOnOffDash;
+  CapStyle := CapRound;
+  JoinStyle := JoinRound;
+  DashOffset := 0;
+  ListLength := 2;
+
+  FillChar(Values, SizeOf(Values), 0);
+  GC :=  XCreateGC(Display, Win, ValueMask, @Values);
+  XSetFont(Display, GC, FontInfo^.fid);
+  XSetForeground(Display, GC, green);//XBlackPixel(Display, ScreenNum));
+  XSetLineAttributes(Display, GC, LineWidth, LineStyle, CapStyle, JoinStyle);
+  XSetDashes(Display, GC, DashOffSet, @DashList, ListLength);
+end;
+
+procedure LoadFont(var FontInfo: PXFontStruct);
+const
+  FontName: PChar = '9x18';
+begin
+  Writeln('Font Struct:', SizeOf(TXFontStruct));
+  FontInfo := XLoadQueryFont(Display, FontName);
+  if FontInfo = nil then
+    begin
+      Writeln(Progname, ': Cannot open '+FontName+' font.');
+      Halt(1);
+    end;
+end;
+
+procedure PlaceText(Win: TWindow; GC: TGC; FontInfo: PXFontStruct;
+  WinWidth, WinHeight: Cardinal);
+const
+  String1: PChar = 'Hi! I''m a window, who are you?';
+  String2: PChar = 'To terminate program; Press any key';
+  String3: PChar = 'or button while in this window.';
+  String4: PChar = 'Screen dimensions:';
+
+var
+  Len1, Len2, Len3, Len4: Integer;
+  Width1, Width2, Width3: Integer;
+  CDHeight, CDWidth, CDDepth: PChar; // array[0..49] of Char;
+  FontHeight: Integer;
+  InitialYOffset, XOffset: Integer;
+  Top, Left: Integer;
+
+begin
+Writeln('#1');
+  Len1 := StrLen(String1);
+  Len2 := StrLen(String2);
+  Len3 := StrLen(String3);
+
+Writeln('#2');
+  Width1 := XTextWidth(FontInfo, String1, Len1);
+  Width2 := XTextWidth(FontInfo, String2, Len2);
+  Width3 := XTextWidth(FontInfo, String3, Len3);
+
+  FontHeight := FontInfo^.Ascent + FontInfo^.Descent;
+  XDrawString(Display, Win, GC, (WinWidth - Width1) div 2, FontHeight+10, String1,
+    Len1);
+Writeln('#2.2 ', Len2, ' ', String2);
+  Left := (WinWidth - Width2);
+Writeln('#2.2.5 Here');
+  Left := Left div 2;
+  Top := WinHeight - FontHeight * 2;
+Writeln('#2.3  Top:', Top, ' Left:', Left);
+  XDrawString(Display, Win, GC, Left, Top, String2, Len2);
+Writeln('#2.3');
+  XDrawString(Display, Win, GC, (WinWidth - Width3) div 2,
+    WinHeight - FontHeight, String3, Len3);
+
+Writeln('#3');
+  CDHeight := PChar(Format(' Height = %d pixels', [XDisplayHeight(Display,
+    ScreenNum)]));
+  CDWidth := PChar(Format(' Width = %d pixels', [XDisplayWidth(Display,
+    ScreenNum)]));
+  CDDepth := PChar(Format(' Depth = %d plane(s)', [XDefaultDepth(Display,
+    ScreenNum)]));
+
+  Len4 := StrLen(String4);
+  Len1 := StrLen(CDHeight);
+  Len2 := StrLen(CDWidth);
+  Len3 := StrLen(CDDepth);
+
+Writeln('#4');
+  InitialYOffset := WinHeight div 2 - FontHeight - FontInfo^.descent;
+  XOffset := WinWidth div 4;
+
+  XDrawString(Display, Win, GC, XOffset, InitialYOffset, String4, Len4);
+  XDrawString(Display, Win, GC, XOffset, InitialYOffset + FontHeight,
+    CDHeight, Len1);
+  XDrawString(Display, Win, GC, XOffset, InitialYOffset + 2 * FontHeight,
+    CDWidth, Len2);
+  XDrawString(Display, Win, GC, XOffset, InitialYOffset + 3 * FontHeight,
+    CDDepth, Len3);
+Writeln('#5');
+end;
+
+procedure PlaceGraphics(Win: TWindow; GC: TGC;
+  WindowWidth, WindowHeight: Cardinal);
+var
+  X, Y: Integer;
+  Width, Height: Integer;
+begin
+  Writeln('Window: ', Integer(Win));
+  Writeln('GC: ', INteger(GC));
+  Height := WindowHeight div 2;
+  Width := 3 * WindowWidth div 4;
+  X := WindowWidth div 2 - Width div 2;
+  Y := WindowHeight div 2 - Height div 2;
+  //XDrawRectangle(Display, Win, GC, X, Y, Width, Height);
+  XDrawRectangle(Display, Win, GC, 0, 0, WindowWidth-1, WindowHeight-1);
+end;
+
+procedure TooSmall(Win: TWindow; GC: TGC; FontInfo: PXFontStruct);
+const
+  String1: PChar = 'Too Small';
+var
+  YOffset, XOffset: Integer;
+begin
+  YOffset := FontInfo^.Ascent + 10;
+  XOffset := 10;
+
+  XDrawString(Display, Win, GC, XOffset, YOffset, String1, StrLen(String1));
+end;
+
+var
+  Win: TWindow;
+  Width, Height: Word;
+  Left, Top: Integer;
+  BorderWidth: Word = 4;
+  DisplayWidth, DisplayHeight: Word;
+//  IconWidth, IconHeight: Word;
+  WindowNameStr: PChar = 'Basic Window Program';
+  IconNameStr: PChar = 'basicWin';
+  IconPixmap: TPixmap;
+  SizeHints: PXSizeHints;
+  SizeList: PXIconSize;
+  WMHints: PXWMHints;
+  ClassHints: PXClassHint;
+  WindowName, IconName: TXTextProperty;
+  Count: Integer;
+  Report: TXEvent;
+  GC: TGC;
+  FontInfo: PXFontStruct;
+  DisplayName: PChar = nil;
+  WindowSize: Integer = 0;
+  b0,b1,b2,b3,b4:integer;
+
+  xcolo,colorcell:TXColor;
+  cmap:TColormap;
 
 procedure TWinHandleImpl.CreateFormWindow;
-var
-   WindowName, IconName: TXTextProperty;
-   AppName:pchar='app';
 begin
+
   Win := XCreateSimpleWindow(Display, XRootWindow(Display, ScreenNum),
-    hLeft, hTop, hWidth, hHeight, 4{BorderWidth}, XBlackPixel(Display, ScreenNum),
+    Left, Top, Width, Height, BorderWidth, XBlackPixel(Display, ScreenNum),
     XWhitePixel(Display, ScreenNum));
 
-//  XStoreName(Display, Win, pchar(wText));
-//  XSetIconName(Display, Win, pchar(Appname));
-//  XStringListToTextProperty(@AppName, 1, @title_property);
-//  XSetWMIconName(Display, Win, @title_property);
-
-  IconPixMap := XCreateBitmapFromData(Display, Win, @IconBitmapBits,
+  IconPixMap := XCreateBitmapFromData(Display, XRootWindow(Display, ScreenNum), @IconBitmapBits,
     IconBitmapWidth, IconBitmapHeight);
 
-  SizeList:=XAllocIconSize;
-
-  XGetIconSizes(Display, XRootWindow(Display, ScreenNum), @SizeList, @Count);
-
-  SizeHints := XAllocSizeHints;
-  WMHints := XAllocWMHints;
-  ClassHints := XAllocClassHint;
+  //IconPixMap:=XCreatePixmap(Display, Win, 16, 16, 8);
+  //b0:=16; b1:=16;
+  //b4:=XReadBitmapFile(Display, XRootWindow(Display, ScreenNum), pchar('bad.bmp'), @b0, @b1, @IconPixMap, @b2, @b3);
 
   SizeHints^.flags := PPosition or PSize or PMinSize;
-  SizeHints^.min_width := 200;
-  SizeHints^.min_height:= 100;
+  SizeHints^.min_width := 400;
+  SizeHints^.min_height:= 300;
 
-//  WMHints^.initial_state := NormalState;
-//  WMHints^.input := 1; //True;
-//  WMHints^.icon_pixmap := IconPixmap;
-  WMHints^.flags := StateHint or IconPixmapHint;// or InputHint;
+  if XStringListToTextProperty(@WindowNameStr, 1, @WindowName) = 0 then
+    begin
+      Writeln(Progname, ': structure allocation for window name failed.');
+      Halt(1);
+    end;
 
-  WMHints^.initial_state := IconicState or NormalState;
-  WMHints^.icon_pixmap := IconPixmap;
+  if XStringListToTextProperty(@IconNameStr, 1, @IconName) = 0 then
+    begin
+      Writeln(Progname, ': structure allocqation for icon name failed.');
+      Halt(1);
+    end;
+
+
+  WMHints^.flags := StateHint or InputHint or IconWindowHint;
+  WMHints^.initial_state := NormalState;
+  WMHints^.input := 1; //True;
+  //WMHints^.icon_pixmap := IconPixmap;
+  WMHints^.icon_window := IconPixmap;
   WMHints^.icon_x:=0;
   WMHints^.icon_y:=0;
+  ClassHints^.res_name := PChar(ProgName);
+  ClassHints^.res_class := 'BasicWin!';
 
-//  XSetWMHints(display, win, @WMHints);
-
-  ClassHints^.res_name := PChar('appname');
-  ClassHints^.res_class := pchar(paramstr(0));
-
-  XStringListToTextProperty(@wText, 1, @WindowName);
-  XStringListToTextProperty(@AppName, 1, @IconName);
   XSetWMProperties(Display, Win, @WindowName, @IconName, nil, 0, SizeHints,
     WMHints, ClassHints);
 
+  XSelectInput(Display, Win, ExposureMask or KeyPressMask or ButtonPressMask
+    or StructureNotifyMask);
+
+  LoadFont(FontInfo);
+
+  GetDC(win, GC, FontInfo);
+
   XMapWindow(Display, Win);
-(*
-hWindow := CreateWindowEx(wExStyle, CUSTOM_WIN, pchar(wText), wStyle,
-               hLeft, hTop, hWidth, hHeight,
-               0, 0, system.MainInstance, nil);
-  SetWindowLongPtr(hWindow, GWL_USERDATA, self);
-*)
+end;
+
+procedure InitUI;
+begin
+  ProgName := ParamStr(0);
+//  ProgName := 'BasicWin';  //JJS Remove when 80999 is fixed.
+  SizeHints := XAllocSizeHints;
+  CheckMemory(SizeHints);
+
+  WMHints := XAllocWMHints;
+  CheckMemory(WMHints);
+
+  ClassHints := XAllocClassHint;
+  CheckMemory(ClassHints);
+
+  Display := XOpenDisplay(DisplayName);
+  if Display = nil then
+    begin
+      Writeln(ProgName,': cannot connect to XServer',
+        XDisplayName(DisplayName));
+      Halt(1);
+    end;
+
+  ScreenNum := XDefaultScreen(Display);
+  DisplayWidth := XDisplayWidth(Display, ScreenNum);
+  DisplayHeight := XDisplayHeight(Display, ScreenNum);
+
+  Left := 100; Top := 200;
+  Width := DisplayWidth div 4;  Height := DisplayHeight div 4;
+  if XGetIconSizes(Display, XRootWindow(Display, ScreenNum), @SizeList,
+    @Count) = 0
+  then
+    Writeln('Window Manager didn''t set icon sizes - using default')
+  else
+    begin
+    end;
+
+  cmap:=DefaultColormap(Display, ScreenNum);
+  XAllocNamedColor(display,cmap,'salmon',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'wheat',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'red',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'blue',@colorcell,@xcolo);
+  green:=colorcell.pixel;
+  XAllocNamedColor(display,cmap,'green',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'cyan',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'orange',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'purple',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'yellow',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'pink',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'brown',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'grey',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'turquoise',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'gold',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'magenta',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'navy',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'tan',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'violet',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'white',@colorcell,@xcolo);
+  XAllocNamedColor(display,cmap,'black',@colorcell,@xcolo);
+end;
+
+procedure ProcessMessages;
+begin
+  while True do
+     begin
+       XNextEvent(Display, @Report);
+       case Report._type of
+         Expose:
+           begin
+             Writeln('Expose');
+             if Report.xexpose.count =  0 then
+               begin
+                 if WindowSize = TOO_SMALL then
+                    TooSmall(Win, GC, FontInfo)
+                 else
+                   begin
+                     PlaceText(Win, GC, FontInfo, Width, Height); //*** Fails
+                     PlaceGraphics(Win, GC, Width, Height);
+                   end;
+               end;
+           end;
+         ConfigureNotify:
+           begin
+             Writeln('Configure Notify');
+             Width := Report.xconfigure.Width;
+             Height := Report.xconfigure.Height;
+             Writeln(' Width: ', Width);
+             Writeln(' Height: ', Height);
+             if (width <= SizeHints^.min_width) and
+                (Height <= SizeHints^.min_height)
+             then
+               WindowSize := TOO_SMALL
+             else
+               WindowSize := BIG_ENOUGH;
+           end;
+
+         ButtonPress:
+           begin
+             Writeln('ButtonPress');
+           end;
+
+         KeyPress:
+           begin
+             Writeln('KeyProcess');
+             XUnloadFont(Display, FontInfo^.fid);
+             XFreeGC(Display, GC);
+             XCloseDisplay(Display);
+             halt(0);
+           end;
+         ClientMessage:begin
+//             if Report.xclient.data.l[0] = wmDeleteMessage
+  //           then begin
+               XCloseDisplay(Display);
+    //         end;
+         end
+       else
+       end;
+
+     end;
+
+   Writeln('End.');
+end;
+
+procedure FreeUI;
+begin
 end;
 
 procedure TWinHandleImpl.CreateCompStyle;
