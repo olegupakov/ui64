@@ -2,7 +2,7 @@ unit uilabel;
 
 interface
 
-uses ui, uimpl, uicomp;
+uses ui, uicomp;
 
 type
   TWinLabel=class(TWinComp)

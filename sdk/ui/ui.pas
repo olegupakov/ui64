@@ -77,11 +77,6 @@ const
   MK_XBUTTON1=$0020; // The first X button is down.
   MK_XBUTTON2=$0040; // The second X button is down.
 
-  MR_NONE = 0; // no close
-  MR_OK = 1; // ok close
-  MR_CANCEL = 2; // cancel close
-  MR_CLOSE = 3; // just close
-
   //CW_USEDEFAULT:CARDINAL=$80000000;
 
   VK_BACK = 8;
@@ -95,8 +90,6 @@ function ifthen(Condition: Boolean; ThenExpr, ElseExpr: string):string;overload;
 function muldiv(a,b,c:cardinal):cardinal;
 
 implementation
-
-uses uihandle;
 
 //{$R ui.res}
 

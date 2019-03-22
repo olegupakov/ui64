@@ -2,7 +2,7 @@ unit uicombo;
 
 interface
 
-uses windows, ui, uihandle, uicomp, uiform, uilist, datastorage;
+uses ui, uimpl, uihandle, uicomp, uiform, uilist, datastorage;
 
 type
 
@@ -39,8 +39,7 @@ implementation
 constructor TWinPopupListForm.Create(Owner:TWinHandle);
 begin
   inherited;
-  ExStyle:=WS_EX_COMPOSITED or WS_EX_LAYERED;
-  Style:=WS_POPUP;
+  CreatePopupStyle;
 end;
 
 procedure TWinPopupListForm.CreatePerform;

@@ -94,7 +94,7 @@ OutputDir=
 UnitOutputDir=..\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=..\sdk;..\sdk\ui
+SearchPath=..\sdk;..\sdk\ui;..\sdk\ui\win
 Packages=vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;dclOfficeXP;EhLib70;EhLibDataDrivers70;ToolBar97;crysdcd5
 Conditionals=
 DebugSourceDirs=
@@ -138,8 +138,11 @@ Comments=
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=1
-Item0=..\sdk;..\sdk\ui
+Count=4
+Item0=..\sdk;..\sdk\ui;..\sdk\ui\win
+Item1=..\sdk;..\sdk\ui;..\sdk\win
+Item2=..\sdk;..\sdk\ui;..\sdk\uimpl
+Item3=..\sdk;..\sdk\ui
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=..\dcu

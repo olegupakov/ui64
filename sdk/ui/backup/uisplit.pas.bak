@@ -2,7 +2,7 @@ unit uisplit;
 
 interface
 
-uses ui, uimpl, uihandle, uicomp;
+uses ui, uicomp, uihandle;
 
 type
 

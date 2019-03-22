@@ -2,7 +2,7 @@ program app;
 
 uses
   main,
-//  selectfont,
+  selectfont,
   ui,
   uihandle,
   uicheck,

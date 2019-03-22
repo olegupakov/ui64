@@ -2,7 +2,7 @@ unit uipanel;
 
 interface
 
-uses windows, sysutils, ui, uihandle, uicomp;
+uses sysutils, ui, uimpl, uihandle, uicomp;
 
 type
 

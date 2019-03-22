@@ -2,7 +2,7 @@ unit uiscroll;
 
 interface
 
-uses windows, ui, uicomp, uihandle;
+uses ui, uimpl, uicomp, uihandle;
 
 type
 

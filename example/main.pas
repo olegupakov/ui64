@@ -3,18 +3,18 @@ unit main;
 interface
 uses SysUtils,
      ui, uimpl, uihandle, uiform
-     //, uilabel, uipanel, uiedit, uipicture, uisplit,
-     //uibutton, uilist, uicombo, uimemo, uiscroll, selectfont
+     , uilabel, uipanel, uiedit, uipicture, uisplit,
+     uibutton, uilist, uicombo, uimemo, uiscroll, selectfont
      ;
 
 type
   TAppForm=class(TWinForm)
   private
     c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c21,c22,c23:TWinHandle;
-//    c18:TWinList;
-//    c19:TWinCombo;
-//    c20:TWinMemo;
-//    frm:TSelectFontForm;
+    c18:TWinList;
+    c19:TWinCombo;
+    c20:TWinMemo;
+    frm:TSelectFontForm;
     procedure Button1Click(Sender:TWinHandle);
     procedure Button2Click(Sender:TWinHandle);
     procedure Button3Click(Sender:TWinHandle);
@@ -29,7 +29,7 @@ procedure TAppForm.CreatePerform;
 begin
   inherited;
   name:='form1';
-(*  frm:=nil;
+  frm:=nil;
 
   c1:=TWinPanel.Create(self);
   c1.Name:='c1';
@@ -228,16 +228,16 @@ begin
   c22.Width:=20;
 //  c22.Height:=10;
   c22.Align:=alLeft;
-  c22.CreatePerform;                  *)
+  c22.CreatePerform;
 end;
 
 procedure TAppForm.Button1Click(Sender:TWinHandle);
-//var f:TWinModal;
-  //  c1,c2:TWinHandle;
+var f:TWinModal;
+    c1,c2:TWinHandle;
 begin
 //  MessageBox(0, 'click', nil, mb_Ok);
   //c5.SetFocus
-(*
+
   f:=TWinModal.Create(self);  //todo destroy
   f.Text:='Modal Window';
   f.SetBounds(50,50,300,300);
@@ -263,7 +263,7 @@ begin
   'qwe close qwe qw eq we qw eq weqweqwe qew eqwewe         qqqqqwe qweqweqweqweqeqweqweqweqweqweqeqweqweqwe 5 eqweqeqweqweqwe 5eqwe'+
   'qeqweqweqwe 5eqweqeqweqweqwe 5', 'n n n', MB_ICONQUESTION or MB_YESNO);
   c3.Text:='Comp3!';
-  c3.RedrawPerform;        *)
+  c3.RedrawPerform;
 end;
 
 procedure TAppForm.Button2Click(Sender:TWinHandle);
@@ -315,17 +315,17 @@ end;
 
 procedure TAppForm.Button3Click(Sender:TWinHandle);
 begin
-(*
+
   with TWinModal(Sender.Parent) do begin
     ModalResult:=MR_CANCEL;
     Close
   end;
-*)
+
 end;
 
 procedure TAppForm.Button4Click(Sender:TWinHandle);
 begin
-(*
+
   if frm=nil
   then begin
     frm:=TSelectFontForm.Create(self);
@@ -334,7 +334,7 @@ begin
     frm.CreatePerform;
   end;
   frm.ShowModal;
-*)
+
 end;
 
 end.

@@ -2,7 +2,7 @@ unit selectfont;
 
 interface
 
-uses windows, sysutils, ui, uihandle, uiform, uilabel, uiedit, uibutton, uilist, uicheck;
+uses windows, sysutils, ui, uimpl, uihandle, uiform, uilabel, uiedit, uibutton, uilist, uicheck;
 
 type
 

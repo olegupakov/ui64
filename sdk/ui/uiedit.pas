@@ -8,14 +8,11 @@ type
 
   TWinEdit=class(TWinComp)
   private
-    KeyCursorX, KeyCursorY : integer;
     wSelStart, wSelEnd : integer;
   protected
   public
     procedure CustomPaint;override;
     procedure CreatePerform;override;
-    procedure HideKeyCursor;
-    procedure ShowKeyCursor;
     procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);override;
     procedure MouseLeavePerform;override;
     procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);override;
@@ -55,21 +52,6 @@ end;
 procedure TWinEdit.MouseLeavePerform;
 begin
   inherited;
-end;
-
-procedure TWinEdit.HideKeyCursor;
-begin
-//  HideCaret(hWindow);
-end;
-
-procedure TWinEdit.ShowKeyCursor;
-begin
-(*
-  HideCaret(hWindow);
-  CreateCaret(hWindow, 0, 2, 17);
-  SetCaretPos(KeyCursorX, KeyCursorY);
-  ShowCaret(hWindow);
-*)
 end;
 
 procedure TWinEdit.SetFocusPerform;

@@ -25,8 +25,6 @@ type
     wMinHeight:integer;
 
     wAlign:TAlign;
-    wCursor:cardinal;
-    wEnabled:boolean;
 
     wChildHandleList:TListEx;
 
@@ -51,7 +49,6 @@ type
     procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
     procedure MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
     procedure MouseButtonDblDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
-    procedure SetFocusPerform;virtual;
     procedure KillFocusPerform(handle:HWND);virtual;
     procedure ClosePerform;virtual;
     procedure CapturePerform(AWindow:HWND);virtual;
@@ -241,7 +238,7 @@ end;
 procedure TWinHandle.MouseMovePerform(AButtonControl:cardinal; x,y:integer);
 begin
   RegisterMouseLeave;
-//  SetCursor(wCursor);
+  SetCursor;
   if not wMouseOverComponent
   then begin
     wMouseOverComponent:=true;
@@ -259,7 +256,7 @@ end;
 procedure TWinHandle.MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
 begin
   wMouseDown:=true;
-//  SetFocus;
+  SetFocus;
   if (AButton = mbLeft)
   then begin
     RedrawPerform;
@@ -278,22 +275,6 @@ begin
 end;
 
 procedure TWinHandle.KeyCharPerform(keychar:cardinal);
-begin
-end;
-
-(*
-procedure TWinHandle.SetFocus;
-var h:HWND;
-begin
-  h:=GetFocus;
-  if h<>0
-  then SendMessage(h, WM_KILLFOCUS, 0, 0);
-  windows.SetFocus(hWindow);
-  SetFocusPerform;
-end;
-*)
-
-procedure TWinHandle.SetFocusPerform;
 begin
 end;
 

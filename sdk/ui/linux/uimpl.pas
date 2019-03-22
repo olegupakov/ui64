@@ -53,6 +53,14 @@ const
   CUSTOM_WIN  = 'CustomWindow';
   CUSTOM_COMP = 'CustomComponent';
 
+  DC_BRUSH = 18;
+  DC_PEN = 19;
+
+  MR_NONE = 0; // no close
+  MR_OK = 1; // ok close
+  MR_CANCEL = 2; // cancel close
+  MR_CLOSE = 3; // just close
+
 type
 
   TPoint = Types.TPoint;
@@ -62,6 +70,7 @@ type
 
   HWND  = type LongWord;
   HFONT = type LongWord;
+  HBITMAP = type LongWord;
   HDC   = type LongWord;
   UINT  = type LongWord;
 
@@ -77,8 +86,17 @@ type
     wText:string;
     hLeft, hTop, hWidth, hHeight : integer;
 
+    wBitmap, wMask : HBITMAP;
+
+    wCursor:cardinal;
+
+    KeyCursorX, KeyCursorY : integer;
+
 //    hTrackMouseEvent:TTrackMouseEvent;
     wTrackingMouse:boolean;
+
+    wEnabled:boolean;
+    wModalResult:integer;
 
 //    dc : hdc;
 //    ps : paintstruct;
@@ -86,8 +104,13 @@ type
     procedure CreateFormStyle;
     procedure CreateFormWindow;
 
+    procedure CreateModalStyle;
+    procedure CreateModalWindow;
+
     procedure CreateCompStyle;
     procedure CreateCompWindow;
+
+    procedure CreatePopupStyle;
 
     procedure RegisterMouseLeave;
   public
@@ -95,7 +118,11 @@ type
     procedure Hide;virtual;
     procedure RedrawPerform;
     procedure SetPosPerform;
+    procedure SetFocusPerform;virtual;
 
+    function SetCapture(hWnd: HWND): HWND;
+    function ReleaseCapture: BOOL;
+    function GetCursorPos(var lpPoint: TPoint): BOOL;
     function GetClientRect:TRect;
     procedure BeginPaint;
     procedure EndPaint;
@@ -103,6 +130,16 @@ type
     procedure Polygon(color, bkcolor:cardinal; Left, Top, Right, Bottom:integer);
     procedure Polyline(color:cardinal; start, count:integer; Left, Top, Right, Bottom:integer);
 
+    function ShowModalWindow:integer;
+    procedure CloseModalWindow;
+    procedure EnableWindow;
+    procedure CloseModalPerform;
+    procedure SetFocus;
+    procedure HideKeyCursor;
+    procedure ShowKeyCursor;
+    procedure CreateImagePerform;
+    procedure CustomImagePaint;
+    procedure SetCursor;
   end;
 
 var
@@ -609,6 +646,115 @@ SelectObject(dc, GetStockObject(DC_PEN));
   p[4].X:=Left;  p[4].Y:=Top;
   windows.Polyline(dc, p[start], count);
 *)
+end;
+
+function TWinHandleImpl.GetCursorPos(var lpPoint: TPoint): BOOL;
+begin
+  //result:=windows.GetCursorPos(lpPoint);
+end;
+
+function TWinHandleImpl.SetCapture(hWnd: HWND): HWND;
+begin
+ // result:=windows.SetCapture(hWnd);
+end;
+
+function TWinHandleImpl.ReleaseCapture: BOOL;
+begin
+ // result:=windows.ReleaseCapture;
+end;
+
+function TWinHandleImpl.ShowModalWindow:integer;
+//var AMessage: Msg;
+  //  ret:longbool;
+begin
+(*
+//  result:=inherited ShowModal;
+  wParent.wEnabled:=false;
+  windows.EnableWindow(wParent.hWindow, FALSE);
+  Show;
+  // ProcessMessages;
+  wModalResult:=MR_NONE;
+  repeat
+    ret:=GetMessage(AMessage, 0, 0, 0);
+    if integer(ret) = -1 then break;
+    TranslateMessage(AMessage);
+    DispatchMessage(AMessage)
+  until not ret and (wModalResult<>MR_NONE);
+  result:=wModalResult*)
+end;
+
+procedure TWinHandleImpl.CloseModalWindow;
+begin
+  //PostMessage(hWindow, wm_close, 0, 0);
+end;
+
+procedure TWinHandleImpl.EnableWindow;
+begin
+ // windows.EnableWindow(hWindow, TRUE);
+end;
+
+procedure TWinHandleImpl.CloseModalPerform;
+begin
+(*  if wModalResult=MR_NONE
+  then wModalResult:=MR_CLOSE;
+  PostMessage(hWindow, WM_QUIT, 0, 0);
+  wParent.wEnabled:=true;
+  windows.EnableWindow(wParent.hWindow, TRUE);*)
+end;
+
+procedure TWinHandleImpl.SetFocus;
+//var h:HWND;
+begin
+(*  h:=GetFocus;
+  if h<>0
+  then SendMessage(h, WM_KILLFOCUS, 0, 0);
+  windows.SetFocus(hWindow);
+  SetFocusPerform;*)
+end;
+
+procedure TWinHandleImpl.SetFocusPerform;
+begin
+end;
+
+procedure TWinHandleImpl.HideKeyCursor;
+begin
+//  HideCaret(hWindow);
+end;
+
+procedure TWinHandleImpl.ShowKeyCursor;
+begin
+ (* HideCaret(hWindow);
+  CreateCaret(hWindow, 0, 2, 17);
+  SetCaretPos(KeyCursorX, KeyCursorY);
+  ShowCaret(hWindow);*)
+end;
+
+procedure TWinHandleImpl.CreateImagePerform;
+begin
+ // wBitmap:=LoadBitmap(system.MainInstance, 'BAD');  //todo deleteobject
+ // wMask:=CreateBitmapMask(wBitmap, $ffffff{clWhite});
+end;
+
+procedure TWinHandleImpl.CustomImagePaint;
+//var
+  //img : hdc;
+begin
+ (* BeginPaint;
+  img:=CreateCompatibleDC(dc);
+
+  SelectObject(img, wMask);
+  BitBlt(dc,0,0,50,50,img,0,0,SRCAND);
+
+  SelectObject(img, wBitmap);
+  BitBlt(dc,0,0,50,50,img,0,0,SRCPAINT);
+
+  DeleteDC(img);
+  EndPaint;  *)
+end;
+
+procedure TWinHandleImpl.SetCursor;
+begin
+  //windows.SetCursor(wCursor);
 end;
 
 end.

@@ -2,7 +2,7 @@ unit uimemo;
 
 interface
 
-uses Windows, SysUtils, Math, ui, uihandle, uicomp, datastorage;
+uses SysUtils, Math, ui, uimpl, uihandle, uicomp, datastorage;
 
 type
 
@@ -10,14 +10,11 @@ type
   private
     wTopItem:integer;
     wLines:TStringListEx;
-    KeyCursorX, KeyCursorY : integer;
   protected
   public
     constructor Create(Owner:TWinHandle);override;
     procedure CustomPaint;override;
     procedure CreatePerform;override;
-    procedure HideKeyCursor;
-    procedure ShowKeyCursor;
     procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);override;
     procedure MouseLeavePerform;override;
     procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);override;
@@ -87,19 +84,6 @@ procedure TWinMemo.MouseLeavePerform;
 begin
   inherited;
   //RedrawPerform;
-end;
-
-procedure TWinMemo.HideKeyCursor;
-begin
-  HideCaret(hWindow);
-end;
-
-procedure TWinMemo.ShowKeyCursor;
-begin
-  HideCaret(hWindow);
-  CreateCaret(hWindow, 0, 2, 17);
-  SetCaretPos(KeyCursorX, KeyCursorY);
-  ShowCaret(hWindow);
 end;
 
 procedure TWinMemo.SetFocusPerform;

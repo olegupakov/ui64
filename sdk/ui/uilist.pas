@@ -28,7 +28,7 @@ type
 
 implementation
 
-uses Types, math;
+uses math;
 
 constructor TWinList.Create(Owner:TWinHandle);
 begin
