@@ -40,20 +40,19 @@ type
     procedure SetBounds(ALeft, ATop, AWidth, AHeight : integer);
 //    procedure SetFocus;virtual;
     procedure CreatePerform;virtual;abstract;
-    procedure SizePerform;virtual;
     procedure SetFontPerform;virtual;
-    procedure CustomPaint;virtual;
-    procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);virtual;
-    procedure MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);virtual;
-    procedure MouseLeavePerform;virtual;
-    procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
-    procedure MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
-    procedure MouseButtonDblDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
-    procedure KillFocusPerform(handle:HWND);virtual;
-    procedure ClosePerform;virtual;
-    procedure CapturePerform(AWindow:HWND);virtual;
-    procedure KeyCharPerform(keychar:cardinal);virtual;
+    procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);override;
+    procedure MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);override;
+    procedure MouseLeavePerform;override;
+    procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);override;
+    procedure MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);override;
+    procedure MouseButtonDblDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);override;
+    procedure KillFocusPerform(handle:HWND);override;
+    procedure ClosePerform;override;
+    procedure CapturePerform(AWindow:HWND);override;
+    procedure KeyCharPerform(keychar:cardinal);override;
     procedure CalcTextSize(const AText:string; var AWidth, AHeight:integer);
+    procedure SizePerform;override;
 
     property Window:HWnd read hWindow;
     property Parent:TWinHandle read GetParent write SetParent;
@@ -83,7 +82,7 @@ type
 
 function CreateMainWindow(AMainWinForm:TWinHandle; AText:string):TWinHandle;
 
-var MainWinForm:TWinHandle;
+//var MainWinForm:TWinHandle;
     //KeyboardLanguage:cardinal;
 
 implementation
@@ -110,23 +109,19 @@ end;
 function CreateMainWindow(AMainWinForm:TWinHandle; AText:string):TWinHandle;
 begin
   MainWinForm:=AMainWinForm;
-  MainWinForm.Text:=AText;
-  MainWinForm.Parent := nil;
-  MainWinForm.CreatePerform;
-  if MainWinForm.Window = 0 then begin
+  AMainWinForm.Text:=AText;
+  AMainWinForm.Parent := nil;
+  AMainWinForm.CreatePerform;
+  if AMainWinForm.Window = 0 then begin
     //MessageBox(0, 'WinCreate failed', nil, mb_Ok);
     //halt(0);
   end;
-  result:=MainWinForm;
+  result:=AMainWinForm;
 end;
 
 function TWinHandle.ShowModal:integer;
 begin
   result:=MR_CLOSE
-end;
-
-procedure TWinHandle.CustomPaint;
-begin
 end;
 
 function TWinHandle.GetParent:TWinHandle;

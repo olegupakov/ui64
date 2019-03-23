@@ -12,6 +12,7 @@ type
   public
     constructor Create(Owner:TWinHandle);override;
     procedure CreatePerform;override;
+    procedure CustomPaint;override;
   end;
 
 
@@ -49,6 +50,20 @@ begin
   CreateFormWindow;
 end;
 
+procedure TWinForm.CustomPaint;
+var r:trect;
+begin
+  inherited;
+  r:=GetClientRect;
+  BeginPaint;
+  Polygon(0,
+          0,
+          r.Left, r.Top, r.Right-1, r.Bottom-1);
+  DrawText(r, 'form', font,
+           0, 0,
+           TRANSPARENT, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+  EndPaint;
+end;
 
 constructor TWinModal.Create(Owner:TWinHandle);
 begin
@@ -84,6 +99,5 @@ begin
   if Assigned(wOnKillFocus)
   then wOnKillFocus(self)
 end;
-
 
 end.

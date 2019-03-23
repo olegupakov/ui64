@@ -61,6 +61,24 @@ const
   MR_CANCEL = 2; // cancel close
   MR_CLOSE = 3; // just close
 
+  DT_TOP = 0;
+  DT_LEFT = 0;
+  DT_CENTER = 1;
+  DT_RIGHT = 2;
+  DT_VCENTER = 4;
+  DT_BOTTOM = 8;
+  DT_WORDBREAK = $10;
+  DT_SINGLELINE = $20;
+  DT_EXPANDTABS = $40;
+  DT_TABSTOP = $80;
+  DT_NOCLIP = $100;
+  DT_EXTERNALLEADING = $200;
+  DT_CALCRECT = $400;
+  DT_NOPREFIX = $800;
+  DT_INTERNAL = $1000;
+  DT_HIDEPREFIX = $00100000;
+  DT_PREFIXONLY = $00200000;
+
 type
 
   TPoint = Types.TPoint;
@@ -119,6 +137,7 @@ type
     procedure RedrawPerform;
     procedure SetPosPerform;
     procedure SetFocusPerform;virtual;
+    procedure CustomPaint;virtual;
 
     function SetCapture(hWnd: HWND): HWND;
     function ReleaseCapture: BOOL;
@@ -140,12 +159,25 @@ type
     procedure CreateImagePerform;
     procedure CustomImagePaint;
     procedure SetCursor;
+
+    procedure SizePerform;virtual;
+    procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);virtual;
+    procedure MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);virtual;
+    procedure MouseLeavePerform;virtual;
+    procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
+    procedure MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
+    procedure MouseButtonDblDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
+    procedure KillFocusPerform(handle:HWND);virtual;
+    procedure ClosePerform;virtual;
+    procedure KeyCharPerform(keychar:cardinal);virtual;
+    procedure CapturePerform(AWindow:HWND);virtual;
   end;
 
 var
   crArrow, crHand, crIBeam, crHourGlass, crSizeNS, crSizeWE : cardinal; // will be initialalized
   fntRegular,fntBold:HFONT; // will be initialalized
 
+var MainWinForm:TWinHandleImpl;
 
 function MessageBox(hWnd: HWND; lpText, lpCaption: PChar; uType: UINT): Integer; stdcall;
 function SetDCBrushColor(DC: HDC; Color: COLORREF): COLORREF; stdcall;
@@ -161,8 +193,6 @@ function CreateBitmapMask(hbmColour:HBITMAP; crTransparent:COLORREF):HBITMAP;
 
 implementation
 
-uses uihandle;
-
 {$IFDEF CPU64}
 function GetWindowLongPtr; external user32 name 'GetWindowLongPtrA';
 function SetWindowLongPtr; external user32 name 'SetWindowLongPtrA';
@@ -176,7 +206,7 @@ function SetDCPenColor; external gdi32 name 'SetDCPenColor';
 function MessageBox; external user32 name 'MessageBoxA';
 
 
-function MouseCustomProc(comp:TWinHandle;AMessage: UINT; WParam : WPARAM; LParam: LPARAM):boolean;
+function MouseCustomProc(comp:TWinHandleImpl;AMessage: UINT; WParam : WPARAM; LParam: LPARAM):boolean;
 var
   x,y,deltawheel:integer;
   mb:TMouseButton;
@@ -225,7 +255,7 @@ begin
     WM_MOUSEWHEEL:begin
       GetCursorPos(p);
       hWndUnder:=WindowFromPoint(p);
-      if(hWndUnder=0)or(comp.Window=hWndUnder)
+      if(hWndUnder=0)or(comp.hWindow=hWndUnder)
       then begin
 (*
         deltawheel:=wparam;
@@ -253,7 +283,7 @@ end;
 
 function WindowProc(hWindow: HWnd; AMessage: UINT; WParam : WPARAM; LParam: LPARAM): LRESULT; stdcall;
 var r:TRect;
-    frm:TWinHandle;
+    frm:TWinHandleImpl;
 begin
   WindowProc := 0;
 
@@ -270,7 +300,7 @@ begin
       end;
       WM_CLOSE:begin
         frm.ClosePerform;
-        if MainWinForm.Window <> hWindow
+        if MainWinForm.hWindow <> hWindow
         then begin
           frm.Hide;
           WindowProc:=0;
@@ -330,7 +360,7 @@ begin
        // Exit;
       end;
       wm_Destroy: begin
-        if MainWinForm.Window = hWindow
+        if MainWinForm.hWindow = hWindow
         then PostQuitMessage(0);
         Exit;
       end;
@@ -342,7 +372,7 @@ end;
 function CustomProc(hWindow: HWnd; AMessage: UINT; WParam : WPARAM;
                     LParam: LPARAM): LRESULT; stdcall;
 var
-  comp:TWinHandle;
+  comp:TWinHandleImpl;
 begin
   comp:=GetWindowLongPtr(hWindow, GWL_USERDATA);
   if comp<>nil
@@ -756,6 +786,54 @@ end;
 procedure TWinHandleImpl.SetCursor;
 begin
   windows.SetCursor(wCursor);
+end;
+
+procedure TWinHandleImpl.CustomPaint;
+begin
+end;
+
+procedure TWinHandleImpl.SizePerform;
+begin
+end;
+
+procedure TWinHandleImpl.MouseMovePerform(AButtonControl:cardinal; x,y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.MouseLeavePerform;
+begin
+end;
+
+procedure TWinHandleImpl.MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.MouseButtonDblDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.KillFocusPerform(handle:HWND);
+begin
+end;
+
+procedure TWinHandleImpl.ClosePerform;
+begin
+end;
+
+procedure TWinHandleImpl.KeyCharPerform(keychar:cardinal);
+begin
+end;
+
+procedure TWinHandleImpl.CapturePerform(AWindow:HWND);
+begin
 end;
 
 end.

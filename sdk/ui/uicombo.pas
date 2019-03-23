@@ -46,6 +46,7 @@ procedure TWinPopupListForm.CreatePerform;
 begin
   inherited;
   wItems:=TWinList.Create(self);
+  wItems.SetBounds(0,0,10,10);
   wItems.Align:=alClient;
   wItems.CreatePerform;
 end;

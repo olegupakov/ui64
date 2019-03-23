@@ -61,6 +61,24 @@ const
   MR_CANCEL = 2; // cancel close
   MR_CLOSE = 3; // just close
 
+  DT_TOP = 0;
+  DT_LEFT = 0;
+  DT_CENTER = 1;
+  DT_RIGHT = 2;
+  DT_VCENTER = 4;
+  DT_BOTTOM = 8;
+  DT_WORDBREAK = $10;
+  DT_SINGLELINE = $20;
+  DT_EXPANDTABS = $40;
+  DT_TABSTOP = $80;
+  DT_NOCLIP = $100;
+  DT_EXTERNALLEADING = $200;
+  DT_CALCRECT = $400;
+  DT_NOPREFIX = $800;
+  DT_INTERNAL = $1000;
+  DT_HIDEPREFIX = $00100000;
+  DT_PREFIXONLY = $00200000;
+
 type
 
   TPoint = Types.TPoint;
@@ -98,6 +116,8 @@ type
     wEnabled:boolean;
     wModalResult:integer;
 
+    Win: TWindow;
+    GC: TGC;
 //    dc : hdc;
 //    ps : paintstruct;
 
@@ -119,10 +139,11 @@ type
     procedure RedrawPerform;
     procedure SetPosPerform;
     procedure SetFocusPerform;virtual;
+    procedure CustomPaint;virtual;
 
     function SetCapture(hWnd: HWND): HWND;
-    function ReleaseCapture: BOOL;
-    function GetCursorPos(var lpPoint: TPoint): BOOL;
+    function ReleaseCapture: BOOLEAN;
+    function GetCursorPos(var lpPoint: TPoint): BOOLEAN;
     function GetClientRect:TRect;
     procedure BeginPaint;
     procedure EndPaint;
@@ -140,45 +161,32 @@ type
     procedure CreateImagePerform;
     procedure CustomImagePaint;
     procedure SetCursor;
+    procedure SizePerform;virtual;
+    procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);virtual;
+    procedure MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);virtual;
+    procedure MouseLeavePerform;virtual;
+    procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
+    procedure MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
+    procedure MouseButtonDblDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);virtual;
+    procedure KillFocusPerform(handle:HWND);virtual;
+    procedure ClosePerform;virtual;
+    procedure KeyCharPerform(keychar:cardinal);virtual;
+    procedure CapturePerform(AWindow:HWND);virtual;
   end;
 
 var
   crArrow, crHand, crIBeam, crHourGlass, crSizeNS, crSizeWE : cardinal; // will be initialalized
   fntRegular,fntBold:HFONT; // will be initialalized
 
-  green:culong;
+var MainWinForm:TWinHandleImpl;
 
-//function MessageBox(hWnd: HWND; lpText, lpCaption: PChar; uType: UINT): Integer; stdcall;
-//function SetDCBrushColor(DC: HDC; Color: COLORREF): COLORREF; stdcall;
-//function SetDCPenColor(DC: HDC; Color: COLORREF): COLORREF; stdcall;
-//function GetWindowLongPtr(hWnd: HWND; nIndex: Integer): pointer; stdcall;
-//function SetWindowLongPtr(hWnd: HWND; nIndex: Integer; dwNewLong: pointer): pointer; stdcall;
+  green:culong;
 
 procedure InitUI;
 procedure ProcessMessages;
 procedure FreeUI;
 
 implementation
-
-
-procedure TWinHandleImpl.CreateFormStyle;
-begin
-//  wExStyle:=WS_EX_COMPOSITED or WS_EX_LAYERED or WS_EX_NOINHERITLAYOUT;
-//  wStyle:=WS_OVERLAPPEDWINDOW;
-end;
-
-const
-  IconBitmapWidth = 16;
-  IconBitmapHeight = 16;
-
-   IconBitmapBits: packed array[1..32] of Byte = ($1f, $f8, $1f, $88, $1f, $88, $1f, $88, $1f, $88, $1f, $f8,
-   $1f, $f8, $1f, $f8, $1f, $f8, $1f, $f8, $1f, $f8, $ff, $ff,
-   $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff);
-
-
-  BITMAPDEPTH = 1;
-  TOO_SMALL = 0;
-  BIG_ENOUGH = 1;
 
 var
   Display: PDisplay;
@@ -192,6 +200,10 @@ begin
       Writeln(ProgName,': Failure Allocating Memory');
       Halt(0);
     end;
+end;
+
+procedure TWinHandleImpl.CreateFormStyle;
+begin
 end;
 
 procedure GetDC(Win: TWindow;var GC: TGC; FontInfo: PXFontStruct);
@@ -320,22 +332,9 @@ begin
   XDrawRectangle(Display, Win, GC, 0, 0, WindowWidth-1, WindowHeight-1);
 end;
 
-procedure TooSmall(Win: TWindow; GC: TGC; FontInfo: PXFontStruct);
-const
-  String1: PChar = 'Too Small';
 var
-  YOffset, XOffset: Integer;
-begin
-  YOffset := FontInfo^.Ascent + 10;
-  XOffset := 10;
-
-  XDrawString(Display, Win, GC, XOffset, YOffset, String1, StrLen(String1));
-end;
-
-var
-  Win: TWindow;
-  Width, Height: Word;
-  Left, Top: Integer;
+//  Width, Height: Word;
+//  Left, Top: Integer;
   BorderWidth: Word = 4;
   DisplayWidth, DisplayHeight: Word;
 //  IconWidth, IconHeight: Word;
@@ -349,7 +348,6 @@ var
   WindowName, IconName: TXTextProperty;
   Count: Integer;
   Report: TXEvent;
-  GC: TGC;
   FontInfo: PXFontStruct;
   DisplayName: PChar = nil;
   WindowSize: Integer = 0;
@@ -358,19 +356,42 @@ var
   xcolo,colorcell:TXColor;
   cmap:TColormap;
 
+  ArrWinCount:integer=0;
+  ArrWin:array[1..10000] of record
+           Win:TWindow;
+           Obj:TWinHandleImpl;
+         end;
+
+procedure SetWinObj(Win:TWindow; Obj:TWinHandleImpl);
+begin
+  inc(ArrWinCount);
+  ArrWin[ArrWinCount].Win:=Win;
+  ArrWin[ArrWinCount].Obj:=Obj;
+end;
+
+function GetWinObj(Win:TWindow):TWinHandleImpl;
+var i:integer;
+begin
+  i:=1;
+  while(i<=ArrWinCount) do begin
+    if ArrWin[i].Win=Win
+    then begin
+      result:=ArrWin[i].Obj;
+      exit;
+    end;
+    inc(i);
+  end;
+  result:=nil;
+end;
+
 procedure TWinHandleImpl.CreateFormWindow;
 begin
 
   Win := XCreateSimpleWindow(Display, XRootWindow(Display, ScreenNum),
-    Left, Top, Width, Height, BorderWidth, XBlackPixel(Display, ScreenNum),
+    hLeft, hTop, hWidth, hHeight, BorderWidth, XBlackPixel(Display, ScreenNum),
     XWhitePixel(Display, ScreenNum));
 
-  IconPixMap := XCreateBitmapFromData(Display, XRootWindow(Display, ScreenNum), @IconBitmapBits,
-    IconBitmapWidth, IconBitmapHeight);
-
-  //IconPixMap:=XCreatePixmap(Display, Win, 16, 16, 8);
-  //b0:=16; b1:=16;
-  //b4:=XReadBitmapFile(Display, XRootWindow(Display, ScreenNum), pchar('bad.bmp'), @b0, @b1, @IconPixMap, @b2, @b3);
+  SetWinObj(Win, self);
 
   SizeHints^.flags := PPosition or PSize or PMinSize;
   SizeHints^.min_width := 400;
@@ -402,7 +423,7 @@ begin
   XSetWMProperties(Display, Win, @WindowName, @IconName, nil, 0, SizeHints,
     WMHints, ClassHints);
 
-  XSelectInput(Display, Win, ExposureMask or KeyPressMask or ButtonPressMask
+  XSelectInput(Display, Win, ExposureMask or KeyPressMask or ButtonPressMask or ButtonReleaseMask
     or StructureNotifyMask);
 
   LoadFont(FontInfo);
@@ -437,8 +458,8 @@ begin
   DisplayWidth := XDisplayWidth(Display, ScreenNum);
   DisplayHeight := XDisplayHeight(Display, ScreenNum);
 
-  Left := 100; Top := 200;
-  Width := DisplayWidth div 4;  Height := DisplayHeight div 4;
+  //Left := 100; Top := 200;
+  //Width := DisplayWidth div 4;  Height := DisplayHeight div 4;
   if XGetIconSizes(Display, XRootWindow(Display, ScreenNum), @SizeList,
     @Count) = 0
   then
@@ -471,7 +492,38 @@ begin
   XAllocNamedColor(display,cmap,'black',@colorcell,@xcolo);
 end;
 
+procedure MouseCustomProc(obj:TWinHandleImpl; _type:cint; button:cuint; x, y:cint);
+var b:TMouseButton;
+begin
+  if(button=1)or(button=2)or(button=3)
+  then begin
+    if button=1
+    then b:=mbLeft;
+    if button=2
+    then b:=mbMiddle;
+    if button=3
+    then b:=mbRight;
+    if _type = ButtonPress
+    then begin
+      Obj.MouseButtonDownPerform(b, 0, x, y);
+    end;
+    if _type = ButtonRelease
+    then begin
+      Obj.MouseButtonUpPerform(b, 0, x, y);
+    end;
+  end;
+  if (_type = ButtonPress)and(button=4)
+  then begin
+    Obj.MouseWheelPerform(0, 1, x, y);
+  end;
+  if (_type = ButtonPress)and(button=5)
+  then begin
+    Obj.MouseWheelPerform(0, -1, x, y);
+  end;
+end;
+
 procedure ProcessMessages;
+var Obj:TWinHandleImpl;
 begin
   while True do
      begin
@@ -480,44 +532,53 @@ begin
          Expose:
            begin
              Writeln('Expose');
-             if Report.xexpose.count =  0 then
-               begin
-                 if WindowSize = TOO_SMALL then
-                    TooSmall(Win, GC, FontInfo)
-                 else
-                   begin
-                     PlaceText(Win, GC, FontInfo, Width, Height); //*** Fails
-                     PlaceGraphics(Win, GC, Width, Height);
-                   end;
-               end;
+             if Report.xexpose.count =  0
+             then begin
+               Obj:=GetWinObj(report.xexpose.window);
+               Obj.CustomPaint;
+             //  PlaceText(Obj.Win, Obj.GC, FontInfo, Obj.hWidth, Obj.hHeight);
+             //  PlaceGraphics(Obj.Win, Obj.GC, Obj.hWidth, Obj.hHeight);
+             end;
            end;
          ConfigureNotify:
            begin
              Writeln('Configure Notify');
-             Width := Report.xconfigure.Width;
-             Height := Report.xconfigure.Height;
-             Writeln(' Width: ', Width);
-             Writeln(' Height: ', Height);
-             if (width <= SizeHints^.min_width) and
+             Obj:=GetWinObj(report.xconfigure.window);
+             Obj.hWidth := Report.xconfigure.Width;
+             Obj.hHeight := Report.xconfigure.Height;
+             Obj.SizePerform;
+             Writeln(' Width: ', Obj.hWidth);
+             Writeln(' Height: ', Obj.hHeight);
+(*             if (width <= SizeHints^.min_width) and
                 (Height <= SizeHints^.min_height)
              then
                WindowSize := TOO_SMALL
              else
-               WindowSize := BIG_ENOUGH;
+               WindowSize := BIG_ENOUGH;*)
            end;
 
          ButtonPress:
            begin
-             Writeln('ButtonPress');
+             Writeln('ButtonPress ',Report.xbutton.button,' ',Report.xbutton.window);
+             Obj:=GetWinObj(report.xbutton.window);
+             MouseCustomProc(Obj, Report._type, Report.xbutton.button, Report.xbutton.x, Report.xbutton.y);
+           end;
+
+         ButtonRelease:
+           begin
+             Writeln('ButtonRelease ',Report.xbutton.button,' ',Report.xbutton.window);
+             Obj:=GetWinObj(report.xbutton.window);
+             MouseCustomProc(Obj, Report._type, Report.xbutton.button, Report.xbutton.x, Report.xbutton.y);
            end;
 
          KeyPress:
            begin
              Writeln('KeyProcess');
-             XUnloadFont(Display, FontInfo^.fid);
-             XFreeGC(Display, GC);
+             Obj:=GetWinObj(report.xkey.window);
+     (*        XUnloadFont(Display, FontInfo^.fid);
+             XFreeGC(Display, Obj.GC);
              XCloseDisplay(Display);
-             halt(0);
+             halt(0);*)
            end;
          ClientMessage:begin
 //             if Report.xclient.data.l[0] = wmDeleteMessage
@@ -539,18 +600,19 @@ end;
 
 procedure TWinHandleImpl.CreateCompStyle;
 begin
-//  wExStyle:=WS_EX_CONTROLPARENT;
-//  wStyle:=WS_CHILD or WS_VISIBLE;
 end;
 
 procedure TWinHandleImpl.CreateCompWindow;
 begin
-(*
-hWindow := CreateWindowEx(wExStyle, CUSTOM_COMP, nil, wStyle,
-                          hLeft, hTop, hWidth, hHeight,
-                          wParent.hWindow, 0, 0, nil);
-  SetWindowLongPtr(hWindow, GWL_USERDATA, self);
-*)
+  Win := XCreateSimpleWindow(Display, wParent.Win,
+    hLeft, hTop, hWidth, hHeight, 0, XBlackPixel(Display, ScreenNum),
+    XWhitePixel(Display, ScreenNum));
+
+  SetWinObj(Win, self);
+
+  XSelectInput(Display, Win, ExposureMask or KeyPressMask or ButtonPressMask or ButtonReleaseMask);
+  GetDC(win, GC, FontInfo);
+  XMapWindow(Display, Win);
 end;
 
 procedure TWinHandleImpl.Show(nCmdShow:integer=SW_SHOWNORMAL);
@@ -564,13 +626,18 @@ begin
 end;
 
 procedure TWinHandleImpl.RedrawPerform;
+//var r:TRect;
 begin
+  //r:=GetClientRect;
+//  XFillRectangle(Display, win, GC, r.Left, r.Top, r.Width, r.Height);
+  XClearWindow(Display, win);
+  CustomPaint;
 //  InvalidateRect(hWindow, nil, TRUE);
 end;
 
 procedure TWinHandleImpl.SetPosPerform;
 begin
-//  SetWindowPos(hWindow, 0, hLeft, hTop, hWidth, hHeight, SWP_NOZORDER);
+  XMoveResizeWindow(display, win, hLeft, hTop, hWidth, hHeight);
 end;
 
 procedure TWinHandleImpl.RegisterMouseLeave;
@@ -592,44 +659,42 @@ end;
 
 function TWinHandleImpl.GetClientRect:TRect;
 begin
-//  windows.GetClientRect(hWindow, result)
+  result:=rect(0,0,hWidth,hHeight);
 end;
 
 procedure TWinHandleImpl.BeginPaint;
 begin
-//  dc:=windows.BeginPaint(hWindow, ps)
 end;
 
 procedure TWinHandleImpl.EndPaint;
 begin
-//  windows.EndPaint(hWindow, ps)
 end;
 
 procedure TWinHandleImpl.DrawText(var r:TRect; const text:string; font:HFONT; color, bkcolor:cardinal; mode:integer; style:cardinal);
+var FontHeight,Width1:integer;
+    L, B:cardinal;
 begin
-(*
-SelectObject(dc, font);
-  SetTextColor(dc, color);
-  SetBkColor(dc, bkcolor);
-  SetBkMode(dc, mode);
-  windows.DrawText(dc, pchar(text), -1, r, style);
-*)
+  if (win<>0)and(GC<>nil)
+  then begin
+    Width1 := XTextWidth(FontInfo, pchar(text), Length(Text));
+    FontHeight := FontInfo^.Ascent + FontInfo^.Descent;
+
+    L:=r.Left;
+    B:=r.Bottom;
+    if (style and DT_CENTER) = DT_CENTER
+    then L:=r.Left+(r.Right-r.Left) div 2-Width1 div 2;
+    if (style and DT_VCENTER) = DT_VCENTER
+    then B:=r.Top+(r.Bottom-r.Top) div 2+FontHeight div 2;
+    XDrawString(Display, Win, GC, L, B, pchar(text), Length(Text));
+  end;
 end;
 
 procedure TWinHandleImpl.Polygon(color, bkcolor:cardinal; Left, Top, Right, Bottom:integer);
-//var p : array[0..3] of tpoint;
 begin
-(*
-SelectObject(dc, GetStockObject(DC_PEN));
-  SetDCPenColor(dc, color);
-  SelectObject(dc, GetStockObject(DC_BRUSH));
-  SetDCBrushColor(dc, bkcolor);
-  p[0].X:=Left;  p[0].Y:=Top;
-  p[1].X:=Right; p[1].Y:=Top;
-  p[2].X:=Right; p[2].Y:=Bottom;
-  p[3].X:=Left;  p[3].Y:=Bottom;
-  windows.Polygon(dc, p, 4);
-*)
+  if (win<>0)and(GC<>nil)
+  then begin
+    XDrawRectangle(Display, Win, GC, Left, Top, Right, Bottom);
+  end;
 end;
 
 procedure TWinHandleImpl.Polyline(color:cardinal; start, count:integer; Left, Top, Right, Bottom:integer);
@@ -648,7 +713,7 @@ SelectObject(dc, GetStockObject(DC_PEN));
 *)
 end;
 
-function TWinHandleImpl.GetCursorPos(var lpPoint: TPoint): BOOL;
+function TWinHandleImpl.GetCursorPos(var lpPoint: TPoint): BOOLEAN;
 begin
   //result:=windows.GetCursorPos(lpPoint);
 end;
@@ -658,7 +723,7 @@ begin
  // result:=windows.SetCapture(hWnd);
 end;
 
-function TWinHandleImpl.ReleaseCapture: BOOL;
+function TWinHandleImpl.ReleaseCapture: BOOLEAN;
 begin
  // result:=windows.ReleaseCapture;
 end;
@@ -755,6 +820,79 @@ end;
 procedure TWinHandleImpl.SetCursor;
 begin
   //windows.SetCursor(wCursor);
+end;
+
+procedure TWinHandleImpl.CreateModalStyle;
+begin
+(*
+wExStyle:=WS_EX_COMPOSITED or WS_EX_LAYERED or WS_EX_DLGMODALFRAME;
+  wStyle:=WS_BORDER or WS_POPUP or WS_SYSMENU or WS_DLGFRAME
+            or WS_SIZEBOX or WS_MINIMIZEBOX or WS_MAXIMIZEBOX;
+*)
+end;
+
+procedure TWinHandleImpl.CreateModalWindow;
+begin
+(*
+hWindow := CreateWindowEx(wExStyle, CUSTOM_WIN, pchar(wText), wStyle,
+               hLeft, hTop, hWidth, hHeight,
+               wParent.hWindow, 0, system.MainInstance, nil);
+  SetWindowLongPtr(hWindow, GWL_USERDATA, self);
+*)
+end;
+
+procedure TWinHandleImpl.CreatePopupStyle;
+begin
+//  wExStyle:=WS_EX_COMPOSITED or WS_EX_LAYERED;
+//  wStyle:=WS_POPUP;
+end;
+
+procedure TWinHandleImpl.CustomPaint;
+begin
+end;
+
+procedure TWinHandleImpl.SizePerform;
+begin
+end;
+
+procedure TWinHandleImpl.MouseMovePerform(AButtonControl:cardinal; x,y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.MouseLeavePerform;
+begin
+end;
+
+procedure TWinHandleImpl.MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.MouseButtonDblDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
+begin
+end;
+
+procedure TWinHandleImpl.KillFocusPerform(handle:HWND);
+begin
+end;
+
+procedure TWinHandleImpl.ClosePerform;
+begin
+end;
+
+procedure TWinHandleImpl.KeyCharPerform(keychar:cardinal);
+begin
+end;
+
+procedure TWinHandleImpl.CapturePerform(AWindow:HWND);
+begin
 end;
 
 end.

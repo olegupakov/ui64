@@ -43,10 +43,11 @@ begin
   c2.Align:=alLeft;
   c2.CreatePerform;
 
+
   c4:=TWinLabel.Create(c2);
   c4.Color:=clBlack;
-  c4.Text:='La&bel 1  ';
-  c4.SetBounds(10,10,0,0);
+  c4.Text:='Label 1';
+  c4.SetBounds(10,10,10,10);
   c4.Align:=alNone;
   c4.CreatePerform;
 
@@ -78,7 +79,8 @@ begin
   c18.Items.Add('item12');
   c18.Selected:=2;
 
-  c19:=TWinCombo.Create(c2);
+
+(*c19:=TWinCombo.Create(c2);
   c19.name:='combo1';
   c19.Color:=clBlack;
   c19.SetBounds(10,215,200,25);
@@ -89,6 +91,8 @@ begin
   c19.Items.Add('item 3');
   c19.Items.Add('item 4');
   c19.Selected:=2;
+*)
+
 
   c23:=TWinButton.Create(c2);
   c23.Align:=alNone;
@@ -97,10 +101,12 @@ begin
   c23.OnClick:=Button4Click;
   c23.CreatePerform;
 
+
   c16:=TWinImage.Create(c2);
   c16.SetBounds(250,50,16,16);
   c16.Align:=alNone;
   c16.CreatePerform;
+
 
   c3:=TWinSplit.Create(c1);
   c3.Width:=3;
@@ -114,7 +120,6 @@ begin
   c4.Align:=alClient;
   c4.CreatePerform;
 
-
   c7:=TWinPanel.Create(c1);
   c7.Name:='c7';
   c7.Color:=clPanelBackground2;
@@ -122,8 +127,10 @@ begin
   c7.Align:=alBottom;
   c7.CreatePerform;
 
+
   c10:=TWinSplit.Create(c7);
-  c10.width:=3;// SetBounds(15,15,100,200);
+  c10.height:=3;
+  c10.width:=3;
   c10.Align:=alRight;
   c10.CreatePerform;
 
@@ -142,7 +149,8 @@ begin
   c11.CreatePerform;
 
   c12:=TWinSplit.Create(c8);
-  c12.Height:=3;// SetBounds(15,15,100,200);
+  c12.Height:=3;
+  c12.width:=3;
   c12.Align:=alTop;
   c12.CreatePerform;
 
@@ -154,7 +162,8 @@ begin
   c13.CreatePerform;
 
   c14:=TWinSplit.Create(c11);
-  c14.Width:=3;// SetBounds(15,15,100,200);
+  c14.height:=3;
+  c14.Width:=3;
   c14.Align:=alLeft;
   c14.CreatePerform;
 
@@ -166,7 +175,7 @@ begin
   c9.CreatePerform;
 
 
-  c15:=TWinPanel.Create(self);
+(*  c15:=TWinPanel.Create(self);
   c15.Name:='c15';
   c15.Color:=clPanelBackground2;
   c15.SetBounds(10,10,400,150);
@@ -177,12 +186,13 @@ begin
   c6.Height:=3;
   c6.Width:=3;
   c6.Align:=alTop;
-  c6.CreatePerform;
+  c6.CreatePerform;  *)
 
   c21:=TWinPanel.Create(self);
   c21.Name:='c21';
   c21.Color:=clPanelBackground2;
-  c21.Height:=45;// SetBounds(15,15,100,200);
+  c21.Height:=45;
+  c21.width:=45;
   c21.Align:=alBottom;
   c21.MinHeight:=45;
   c21.CreatePerform;
@@ -225,8 +235,8 @@ begin
   c20.CreatePerform;
 
   c22:=TWinScroll.Create(c7);
-  c22.Width:=20;
-//  c22.Height:=10;
+  c22.Width:=3;
+  c22.Height:=3;
   c22.Align:=alLeft;
   c22.CreatePerform;
 end;
@@ -258,11 +268,13 @@ begin
   c2.OnClick:=Button3Click;
   c2.CreatePerform;
 
+(*
   if f.ShowModal=MR_CLOSE
   then MessageBox(window, 'close qwe qw eq we qw eq weqweqwe qew eqwewe         qqqqqwe qweqweqweqweqeqweqweqweqweqweqeqweqwe'+
   'qwe close qwe qw eq we qw eq weqweqwe qew eqwewe         qqqqqwe qweqweqweqweqeqweqweqweqweqweqeqweqweqwe 5 eqweqeqweqweqwe 5eqwe'+
   'qeqweqweqwe 5eqweqeqweqweqwe 5', 'n n n', MB_ICONQUESTION or MB_YESNO);
-  c3.Text:='Comp3!';
+*)
+c3.Text:='Comp3!';
   c3.RedrawPerform;
 end;
 

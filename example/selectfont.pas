@@ -2,7 +2,7 @@ unit selectfont;
 
 interface
 
-uses windows, sysutils, ui, uimpl, uihandle, uiform, uilabel, uiedit, uibutton, uilist, uicheck;
+uses sysutils, ui, uimpl, uihandle, uiform, uilabel, uiedit, uibutton, uilist, uicheck;
 
 type
 
@@ -118,6 +118,7 @@ begin
   edt2.CreatePerform;
 end;
 
+(*
 function EnumFontsProc(var LogFont: ENUMLOGFONTEX; var TextMetric: TEXTMETRIC; FontType: Integer; data: LPARAM): Integer; stdcall;
 var s:string;
 begin
@@ -132,12 +133,14 @@ begin
   end;
   result:=1;
 end;
+*)
 
 procedure TSelectFontForm.Button1Click(Sender:TWinHandle);
-var
-  LFont: TLogFont;
+//var
+  //LFont: TLogFont;
 begin
-  lst.Items.Clear;
+(*
+lst.Items.Clear;
   lst.TopItem:=0;
   FillChar(LFont, sizeof(LFont), 0);
   LFont.lfCharset := DEFAULT_CHARSET;
@@ -147,13 +150,15 @@ begin
   EndPaint;
 
   lst.RedrawPerform
+*)
 end;
 
 procedure TSelectFontForm.Button2Click(Sender:TWinHandle);
-var q:cardinal;
-    w,i,u,s,h:integer;
+//var q:cardinal;
+  //  w,i,u,s,h:integer;
 begin
-  if fnt<>0 then DeleteObject(fnt);
+(*
+if fnt<>0 then DeleteObject(fnt);
   if ch1.Checked then q:=ANTIALIASED_QUALITY else q:=NONANTIALIASED_QUALITY;
   w:=0;
   if ch20.Checked then w:=w+FW_LIGHT;
@@ -173,6 +178,7 @@ begin
   lbl.RedrawPerform;
   edt.Font:=fnt;
   edt.RedrawPerform;
+*)
 end;
 
 end.
