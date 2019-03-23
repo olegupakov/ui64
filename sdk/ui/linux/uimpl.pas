@@ -172,6 +172,8 @@ type
     procedure ClosePerform;virtual;
     procedure KeyCharPerform(keychar:cardinal);virtual;
     procedure CapturePerform(AWindow:HWND);virtual;
+
+    procedure CalcTextSize(const AText:string; var AWidth, AHeight:integer);
   end;
 
 var
@@ -583,7 +585,7 @@ begin
          ClientMessage:begin
 //             if Report.xclient.data.l[0] = wmDeleteMessage
   //           then begin
-               XCloseDisplay(Display);
+          //     XCloseDisplay(Display);
     //         end;
          end
        else
@@ -833,6 +835,17 @@ end;
 
 procedure TWinHandleImpl.CreateModalWindow;
 begin
+  Win := XCreateSimpleWindow(Display, XRootWindow(Display, ScreenNum),
+    hLeft, hTop, hWidth, hHeight, 0, XBlackPixel(Display, ScreenNum),
+    XWhitePixel(Display, ScreenNum));
+
+  SetWinObj(Win, self);
+
+  XStoreName(Display, Win, pchar('Modal'));
+  XSetTransientForHint(display, win, MainWinForm.win);
+  XSelectInput(Display, Win, ExposureMask or KeyPressMask or ButtonPressMask or ButtonReleaseMask);
+  GetDC(win, GC, FontInfo);
+  XMapWindow(Display, Win);
 (*
 hWindow := CreateWindowEx(wExStyle, CUSTOM_WIN, pchar(wText), wStyle,
                hLeft, hTop, hWidth, hHeight,
@@ -893,6 +906,12 @@ end;
 
 procedure TWinHandleImpl.CapturePerform(AWindow:HWND);
 begin
+end;
+
+procedure TWinHandleImpl.CalcTextSize(const AText:string; var AWidth, AHeight:integer);
+begin
+  AWidth := XTextWidth(FontInfo, pchar(AText), Length(AText));
+  AHeight := FontInfo^.Ascent + FontInfo^.Descent;
 end;
 
 end.

@@ -51,7 +51,6 @@ type
     procedure ClosePerform;override;
     procedure CapturePerform(AWindow:HWND);override;
     procedure KeyCharPerform(keychar:cardinal);override;
-    procedure CalcTextSize(const AText:string; var AWidth, AHeight:integer);
     procedure SizePerform;override;
 
     property Window:HWnd read hWindow;
@@ -212,18 +211,6 @@ begin
        r.Top:=r.Bottom
     end;
   end;
-end;
-
-procedure TWinHandle.CalcTextSize(const AText:string; var AWidth, AHeight:integer);
-var r:trect;
-begin
-  r.Left:=0;
-  r.Top:=0;
-  BeginPaint;
-  DrawText(r, AText, font, color, bkcolor, TRANSPARENT,  DT_SINGLELINE or DT_LEFT or DT_TOP or DT_CALCRECT);
-  EndPaint;
-  AWidth:=r.Right;
-  AHeight:=r.Bottom;
 end;
 
 procedure TWinHandle.MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);

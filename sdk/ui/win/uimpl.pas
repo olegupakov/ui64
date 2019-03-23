@@ -171,6 +171,8 @@ type
     procedure ClosePerform;virtual;
     procedure KeyCharPerform(keychar:cardinal);virtual;
     procedure CapturePerform(AWindow:HWND);virtual;
+
+    procedure CalcTextSize(const AText:string; var AWidth, AHeight:integer);
   end;
 
 var
@@ -834,6 +836,18 @@ end;
 
 procedure TWinHandleImpl.CapturePerform(AWindow:HWND);
 begin
+end;
+
+procedure TWinHandleImpl.CalcTextSize(const AText:string; var AWidth, AHeight:integer);
+var r:trect;
+begin
+  r.Left:=0;
+  r.Top:=0;
+  BeginPaint;
+  DrawText(r, AText, font, color, bkcolor, TRANSPARENT,  DT_SINGLELINE or DT_LEFT or DT_TOP or DT_CALCRECT);
+  EndPaint;
+  AWidth:=r.Right;
+  AHeight:=r.Bottom;
 end;
 
 end.

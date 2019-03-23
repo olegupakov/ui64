@@ -28,8 +28,7 @@ procedure TSelectFontForm.CreatePerform;
 begin
   inherited;
   lbl:=TWinLabel.Create(self);
-  lbl.Left:=10;
-  lbl.Top:=10;
+  lbl.SetBounds(10,10,10,10);
   lbl.Text:='procedure CreatePerform;override; // יצףךוםדרשחץת פûגאןנמכהז‎';
   lbl.CreatePerform;
 
@@ -56,8 +55,7 @@ begin
   edt3.CreatePerform;
 
   ch:=TWinCheck.Create(self);
-  ch.Left:=130;
-  ch.Top:=130;
+  ch.SetBounds(130, 130, 100, 25);
   ch.Text:='Monospace only';
   ch.CreatePerform;
 
@@ -66,44 +64,37 @@ begin
   lst.CreatePerform;
 
   ch1:=TWinCheck.Create(self);
-  ch1.Left:=325;
-  ch1.Top:=160;
+  ch1.SetBounds(325, 160, 100, 25);
   ch1.Text:='antialiased';
   ch1.CreatePerform;
 
   ch20:=TWinCheck.Create(self);
-  ch20.Left:=325;
-  ch20.Top:=190;
+  ch20.SetBounds(325, 190, 100, 25);
   ch20.Text:='light';
   ch20.CreatePerform;
 
   ch21:=TWinCheck.Create(self);
-  ch21.Left:=325;
-  ch21.Top:=215;
+  ch21.SetBounds(325, 215, 100, 25);
   ch21.Text:='regular';
   ch21.CreatePerform;
 
   ch22:=TWinCheck.Create(self);
-  ch22.Left:=325;
-  ch22.Top:=240;
+  ch22.SetBounds(325, 240, 100, 25);
   ch22.Text:='bold';
   ch22.CreatePerform;
 
   ch4:=TWinCheck.Create(self);
-  ch4.Left:=325;
-  ch4.Top:=340;
+  ch4.SetBounds(325, 340, 100, 25);
   ch4.Text:='italic';
   ch4.CreatePerform;
 
   ch5:=TWinCheck.Create(self);
-  ch5.Left:=325;
-  ch5.Top:=365;
+  ch5.SetBounds(325, 365, 100, 25);
   ch5.Text:='underline';
   ch5.CreatePerform;
 
   ch6:=TWinCheck.Create(self);
-  ch6.Left:=325;
-  ch6.Top:=390;
+  ch6.SetBounds(325, 390, 100, 25);
   ch6.Text:='strikeout';
   ch6.CreatePerform;
 
