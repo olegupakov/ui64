@@ -844,7 +844,7 @@ begin
   r.Left:=0;
   r.Top:=0;
   BeginPaint;
-  DrawText(r, AText, font, color, bkcolor, TRANSPARENT,  DT_SINGLELINE or DT_LEFT or DT_TOP or DT_CALCRECT);
+  DrawText(r, AText, 0, 0, 0, TRANSPARENT,  DT_SINGLELINE or DT_LEFT or DT_TOP or DT_CALCRECT);
   EndPaint;
   AWidth:=r.Right;
   AHeight:=r.Bottom;
