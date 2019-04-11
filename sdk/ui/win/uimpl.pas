@@ -61,6 +61,34 @@ const
   MR_CANCEL = 2; // cancel close
   MR_CLOSE = 3; // just close
 
+  clWhite=$ffffff;
+  clBlack=$000000;
+  clGray95=$f2f2f2;
+  //      $c8d0d4
+  clGray98=$fafafa;
+//      $e2e1e1
+  clGray25=$404040;
+
+  clButton=$7dba5f;
+
+  clDkGray=$808080;
+  clWebRoyalBlue=$E16941;
+  clWebSlateGray=$908070;
+  clWebLightBlue=$E6D8AD;
+  clWebLightCyan=$FFFFE0;
+  clWebSkyBlue=$EBCE87;
+
+  clFaceBook1=$98593B;
+  clFaceBook2=$c39d8b;
+  clFaceBook3=$eee3df;
+  clFaceBook4=$f7f7f7;
+
+  clPanelBackground1=$eeeeee;
+  clPanelBackground2=$c8d0d4;
+
+  clButtonInactiveBackground=$e1e1e1;
+  clButtonInactiveBorder=$adadad;
+
   DT_TOP = 0;
   DT_LEFT = 0;
   DT_CENTER = 1;

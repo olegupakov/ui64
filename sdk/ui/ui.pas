@@ -5,7 +5,8 @@ interface
 uses SysUtils, uimpl;
 
 const
-  clWhite=$ffffff;
+(*
+clWhite=$ffffff;
   clBlack=$000000;
   clGray95=$f2f2f2;
   //      $c8d0d4
@@ -26,18 +27,19 @@ const
   clFaceBook2=$c39d8b;
   clFaceBook3=$eee3df;
   clFaceBook4=$f7f7f7;
+
   clPanelBackground1=$eeeeee;
-//  clPanelBackground1=$ededf1;
-//  clPanelBackground1=$b4beb0;
-  //clPanelBackground2=$dddddd;
-
   clPanelBackground2=$c8d0d4;
-
-//  clPanelBackground2=$e5e5e5;
-//  clPanelBackground2=$e5e5e5;
 
   clButtonInactiveBackground=$e1e1e1;
   clButtonInactiveBorder=$adadad;
+*)
+
+  //  clPanelBackground1=$ededf1;
+  //  clPanelBackground1=$b4beb0;
+    //clPanelBackground2=$dddddd;
+    //  clPanelBackground2=$e5e5e5;
+    //  clPanelBackground2=$e5e5e5;
 
 (*
   panel background f0f0f0

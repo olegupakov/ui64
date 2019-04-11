@@ -51,18 +51,18 @@ begin
 end;
 
 procedure TWinForm.CustomPaint;
-var r:trect;
+//var r:trect;
 begin
-  inherited;
+(*  inherited;
   r:=GetClientRect;
   BeginPaint;
-  Polygon(0,
+  Polygon(color,
           0,
           r.Left, r.Top, r.Right-1, r.Bottom-1);
   DrawText(r, 'form', font,
            0, 0,
            TRANSPARENT, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-  EndPaint;
+  EndPaint;*)
 end;
 
 constructor TWinModal.Create(Owner:TWinHandle);

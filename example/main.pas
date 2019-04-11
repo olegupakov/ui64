@@ -274,6 +274,7 @@ begin
   'qwe close qwe qw eq we qw eq weqweqwe qew eqwewe         qqqqqwe qweqweqweqweqeqweqweqweqweqweqeqweqweqwe 5 eqweqeqweqweqwe 5eqwe'+
   'qeqweqweqwe 5eqweqeqweqweqwe 5', 'n n n', MB_ICONQUESTION or MB_YESNO);
 *)
+  f.ShowModal;
 c3.Text:='Comp3!';
   c3.RedrawPerform;
 end;

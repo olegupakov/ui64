@@ -2,7 +2,7 @@ unit uimpl;
 
 interface
 
-uses types, ctypes, sysutils, xlib, x, xutil;
+uses types, ctypes, sysutils, xlib, x, xutil, xatom;
 
 const
     { MessageBox() Flags }
@@ -96,6 +96,7 @@ type
 
   TWinHandleImpl=class
   private
+    wm_delete_window:TAtom;
   protected
     hWindow:HWnd;
     wParent:TWinHandleImpl;
@@ -182,7 +183,7 @@ var
 
 var MainWinForm:TWinHandleImpl;
 
-  green:culong;
+  clBlack, clWhite, clDkGray, clPanelBackground1, clPanelBackground2, clFaceBook1, clFaceBook2 : culong;
 
 procedure InitUI;
 procedure ProcessMessages;
@@ -232,9 +233,10 @@ begin
   FillChar(Values, SizeOf(Values), 0);
   GC :=  XCreateGC(Display, Win, ValueMask, @Values);
   XSetFont(Display, GC, FontInfo^.fid);
-  XSetForeground(Display, GC, green);//XBlackPixel(Display, ScreenNum));
+  //XSetForeground(Display, GC, green);//XBlackPixel(Display, ScreenNum));
+//  XSetBackground(Display, GC, grey);
   XSetLineAttributes(Display, GC, LineWidth, LineStyle, CapStyle, JoinStyle);
-  XSetDashes(Display, GC, DashOffSet, @DashList, ListLength);
+  //XSetDashes(Display, GC, DashOffSet, @DashList, ListLength);
 end;
 
 procedure LoadFont(var FontInfo: PXFontStruct);
@@ -471,7 +473,35 @@ begin
     end;
 
   cmap:=DefaultColormap(Display, ScreenNum);
-  XAllocNamedColor(display,cmap,'salmon',@colorcell,@xcolo);
+
+  XAllocNamedColor(display,cmap,'white',@colorcell,@xcolo);
+  clWhite:=colorcell.pixel;
+
+  XAllocNamedColor(display,cmap,'black',@colorcell,@xcolo);
+  clBlack:=colorcell.pixel;
+
+  XParseColor(display, cmap, '#808080', @colorcell);
+  XAllocColor(display,cmap,@colorcell);
+  clDkGray:=colorcell.pixel;
+
+  XParseColor(display, cmap, '#3B5998', @colorcell);
+  XAllocColor(display,cmap,@colorcell);
+  clFaceBook1:=colorcell.pixel;
+
+  XParseColor(display, cmap, '#8b9dc3', @colorcell);
+  XAllocColor(display,cmap,@colorcell);
+  clFaceBook2:=colorcell.pixel;
+
+  XParseColor(display, cmap, '#eeeeee', @colorcell);
+  XAllocColor(display,cmap,@colorcell);
+  clPanelBackground1:=colorcell.pixel;
+
+  XParseColor(display, cmap, '#d4d0c8', @colorcell);
+  XAllocColor(display,cmap,@colorcell);
+  clPanelBackground2:=colorcell.pixel;
+
+(*
+XAllocNamedColor(display,cmap,'salmon',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'wheat',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'red',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'blue',@colorcell,@xcolo);
@@ -484,14 +514,14 @@ begin
   XAllocNamedColor(display,cmap,'pink',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'brown',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'grey',@colorcell,@xcolo);
+  grey:=colorcell.pixel;
   XAllocNamedColor(display,cmap,'turquoise',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'gold',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'magenta',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'navy',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'tan',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'violet',@colorcell,@xcolo);
-  XAllocNamedColor(display,cmap,'white',@colorcell,@xcolo);
-  XAllocNamedColor(display,cmap,'black',@colorcell,@xcolo);
+*)
 end;
 
 procedure MouseCustomProc(obj:TWinHandleImpl; _type:cint; button:cuint; x, y:cint);
@@ -526,6 +556,7 @@ end;
 
 procedure ProcessMessages;
 var Obj:TWinHandleImpl;
+    k:TKeySym;
 begin
   while True do
      begin
@@ -576,13 +607,19 @@ begin
          KeyPress:
            begin
              Writeln('KeyProcess');
+             case report.xkey.keycode of
+               22:k:=8; // vk_back
+               else k:=XLookupKeysym(@report.xkey, 0);
+             end;
              Obj:=GetWinObj(report.xkey.window);
+             Obj.KeyCharPerform(k);
      (*        XUnloadFont(Display, FontInfo^.fid);
              XFreeGC(Display, Obj.GC);
              XCloseDisplay(Display);
              halt(0);*)
            end;
          ClientMessage:begin
+           break;
 //             if Report.xclient.data.l[0] = wmDeleteMessage
   //           then begin
           //     XCloseDisplay(Display);
@@ -676,8 +713,6 @@ procedure TWinHandleImpl.DrawText(var r:TRect; const text:string; font:HFONT; co
 var FontHeight,Width1:integer;
     L, B:cardinal;
 begin
-  if (win<>0)and(GC<>nil)
-  then begin
     Width1 := XTextWidth(FontInfo, pchar(text), Length(Text));
     FontHeight := FontInfo^.Ascent + FontInfo^.Descent;
 
@@ -686,33 +721,31 @@ begin
     if (style and DT_CENTER) = DT_CENTER
     then L:=r.Left+(r.Right-r.Left) div 2-Width1 div 2;
     if (style and DT_VCENTER) = DT_VCENTER
-    then B:=r.Top+(r.Bottom-r.Top) div 2+FontHeight div 2;
+    then B:=r.Top+(r.Bottom-r.Top) div 2+FontHeight div 2 - 3;
+    XSetForeground(Display, GC, color);
+    XSetBackground(Display, GC, bkcolor);
     XDrawString(Display, Win, GC, L, B, pchar(text), Length(Text));
-  end;
 end;
 
 procedure TWinHandleImpl.Polygon(color, bkcolor:cardinal; Left, Top, Right, Bottom:integer);
 begin
-  if (win<>0)and(GC<>nil)
-  then begin
-    XDrawRectangle(Display, Win, GC, Left, Top, Right, Bottom);
-  end;
+  XSetForeground(Display, GC, bkcolor);
+  XFillRectangle(Display, Win, GC, Left, Top, Right, Bottom);
+  XSetForeground(Display, GC, color);
+  XDrawRectangle(Display, Win, GC, Left, Top, Right, Bottom);
 end;
 
 procedure TWinHandleImpl.Polyline(color:cardinal; start, count:integer; Left, Top, Right, Bottom:integer);
-//var p : array[-1..4] of tpoint;
+var p : array[-1..4] of txpoint;
 begin
-(*
-SelectObject(dc, GetStockObject(DC_PEN));
-  SetDCPenColor(dc, color);
+  XSetForeground(Display, GC, color);
   p[-1].X:=Left; p[-1].Y:=Bottom;
   p[0].X:=Left;  p[0].Y:=Top;
   p[1].X:=Right; p[1].Y:=Top;
   p[2].X:=Right; p[2].Y:=Bottom;
   p[3].X:=Left;  p[3].Y:=Bottom;
   p[4].X:=Left;  p[4].Y:=Top;
-  windows.Polyline(dc, p[start], count);
-*)
+  XDrawLines(Display, Win, GC, @p[start], count, CoordModeOrigin);
 end;
 
 function TWinHandleImpl.GetCursorPos(var lpPoint: TPoint): BOOLEAN;
@@ -731,9 +764,14 @@ begin
 end;
 
 function TWinHandleImpl.ShowModalWindow:integer;
-//var AMessage: Msg;
-  //  ret:longbool;
 begin
+  XMapWindow(display, win);
+  wm_delete_window := XInternAtom(display, 'WM_DELETE_WINDOW', true);
+  XSetWMProtocols(display, win, @wm_delete_window, 1);
+  ProcessMessages;
+  XUnmapWindow(display, win);
+  //XFreeGC(display, GC);
+  //XDestroyWindow(display, win);
 (*
 //  result:=inherited ShowModal;
   wParent.wEnabled:=false;
@@ -834,10 +872,36 @@ wExStyle:=WS_EX_COMPOSITED or WS_EX_LAYERED or WS_EX_DLGMODALFRAME;
 end;
 
 procedure TWinHandleImpl.CreateModalWindow;
+var attr:TXSetWindowAttributes;
+    modal,state:TAtom;
+    hints:TXSizeHints;
 begin
-  Win := XCreateSimpleWindow(Display, XRootWindow(Display, ScreenNum),
-    hLeft, hTop, hWidth, hHeight, 0, XBlackPixel(Display, ScreenNum),
-    XWhitePixel(Display, ScreenNum));
+  state := XInternAtom(display, '_NET_WM_STATE', True);
+  modal := XInternAtom(display, '_NET_WM_STATE_MODAL', True);
+
+  attr.background_pixel := XWhitePixel(Display, ScreenNum);
+
+  Win := XCreateWindow(Display, XRootWindow(Display, ScreenNum),
+    hLeft, hTop, hWidth, hHeight, 0,
+    DefaultDepth(display,ScreenNum), InputOutput, DefaultVisual(display,ScreenNum),
+    CWBackPixel,
+    @attr);
+
+ // wm_delete_window := XInternAtom(display, 'WM_DELETE_WINDOW', true);
+  //XSetWMProtocols(display, win, @wm_delete_window, 1);
+
+  (* no resize *)
+  //XUnmapWindow(Display, win);
+  hints.flags:=PSize or PMinsize or PMaxSize;
+  hints.min_width:=hWidth;
+  hints.base_width:=hWidth;
+  hints.max_width:=hWidth;
+  hints.min_height:=hHeight;
+  hints.base_height:=hHeight;
+  hints.max_height:=hHeight;
+  XsetWMNormalHints(Display, win, @hints);
+
+  XChangeProperty(display, win, state, XA_ATOM, 32, PropModeReplace, @modal, 1);
 
   SetWinObj(Win, self);
 
@@ -845,8 +909,9 @@ begin
   XSetTransientForHint(display, win, MainWinForm.win);
   XSelectInput(Display, Win, ExposureMask or KeyPressMask or ButtonPressMask or ButtonReleaseMask);
   GetDC(win, GC, FontInfo);
-  XMapWindow(Display, Win);
-(*
+  //XMapRaised(Display, Win);
+
+  (*
 hWindow := CreateWindowEx(wExStyle, CUSTOM_WIN, pchar(wText), wStyle,
                hLeft, hTop, hWidth, hHeight,
                wParent.hWindow, 0, system.MainInstance, nil);
