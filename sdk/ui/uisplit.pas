@@ -38,6 +38,8 @@ begin
   inherited;
   if (AButton=mbLeft)
   then begin
+    p.x:=x;
+    p.y:=y;
     GetCursorPos(p);
     last_x_down:=p.x;
     last_y_down:=p.y;
@@ -49,6 +51,7 @@ end;
 procedure TWinSplit.MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
 begin
   inherited;
+  wSplitActive:=false;
   ReleaseCapture();
 end;
 
@@ -64,6 +67,8 @@ begin
   inherited;
   if wSplitActive
   then begin
+    p.x:=x;
+    p.y:=y;
     GetCursorPos(p);
     SplitterPerform(last_x_down-p.x, last_y_down-p.y);
     last_x_down:=p.x;

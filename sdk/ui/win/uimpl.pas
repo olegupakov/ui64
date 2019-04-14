@@ -201,6 +201,7 @@ type
     procedure CapturePerform(AWindow:HWND);virtual;
 
     procedure CalcTextSize(const AText:string; var AWidth, AHeight:integer);
+    property Cursor:cardinal read wCursor write wCursor;
   end;
 
 var

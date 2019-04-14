@@ -107,7 +107,7 @@ type
 
     wBitmap, wMask : HBITMAP;
 
-    wCursor:cardinal;
+    wCursor:TCursor;
 
     KeyCursorX, KeyCursorY : integer;
 
@@ -175,10 +175,11 @@ type
     procedure CapturePerform(AWindow:HWND);virtual;
 
     procedure CalcTextSize(const AText:string; var AWidth, AHeight:integer);
+    property Cursor:TCursor read wCursor write wCursor;
   end;
 
 var
-  crArrow, crHand, crIBeam, crHourGlass, crSizeNS, crSizeWE : cardinal; // will be initialalized
+  crArrow, crHand, crIBeam, crHourGlass, crSizeNS, crSizeWE : TCursor; // will be initialalized
   fntRegular,fntBold:HFONT; // will be initialalized
 
 var MainWinForm:TWinHandleImpl;
@@ -428,7 +429,7 @@ begin
     WMHints, ClassHints);
 
   XSelectInput(Display, Win, ExposureMask or KeyPressMask or ButtonPressMask or ButtonReleaseMask
-    or StructureNotifyMask);
+    or StructureNotifyMask or PointerMotionMask or LeaveWindowMask);
 
   LoadFont(FontInfo);
 
@@ -522,6 +523,13 @@ XAllocNamedColor(display,cmap,'salmon',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'tan',@colorcell,@xcolo);
   XAllocNamedColor(display,cmap,'violet',@colorcell,@xcolo);
 *)
+    crArrow:=XCreateFontCursor(display, 2);
+    crHand:=XCreateFontCursor(display, 60);
+    crIBeam:=XCreateFontCursor(display, 152);
+    crHourGlass:=XCreateFontCursor(display, 26);
+    crSizeNS:=XCreateFontCursor(display, 116);
+    crSizeWE:=XCreateFontCursor(display, 108);
+
 end;
 
 procedure MouseCustomProc(obj:TWinHandleImpl; _type:cint; button:cuint; x, y:cint);
@@ -603,7 +611,16 @@ begin
              Obj:=GetWinObj(report.xbutton.window);
              MouseCustomProc(Obj, Report._type, Report.xbutton.button, Report.xbutton.x, Report.xbutton.y);
            end;
-
+         LeaveNotify:begin
+           writeln('mouse leave');
+           Obj:=GetWinObj(report.xmotion.window);
+           Obj.MouseLeavePerform;
+         end;
+         MotionNotify:begin
+           writeln('mouse move',report.xmotion.x,' ',report.xmotion.y);
+           Obj:=GetWinObj(report.xmotion.window);
+           Obj.MouseMovePerform(0,report.xmotion.x,report.xmotion.y);
+         end;
          KeyPress:
            begin
              Writeln('KeyProcess');
@@ -649,7 +666,8 @@ begin
 
   SetWinObj(Win, self);
 
-  XSelectInput(Display, Win, ExposureMask or KeyPressMask or ButtonPressMask or ButtonReleaseMask);
+  XSelectInput(Display, Win, ExposureMask or KeyPressMask or ButtonPressMask or ButtonReleaseMask
+     or PointerMotionMask or LeaveWindowMask);
   GetDC(win, GC, FontInfo);
   XMapWindow(Display, Win);
 end;
@@ -681,17 +699,16 @@ end;
 
 procedure TWinHandleImpl.RegisterMouseLeave;
 begin
-(*  if not wTrackingMouse
+  if not wTrackingMouse
   then begin
     wTrackingMouse:=true;
-    hTrackMouseEvent.cbSize:=SizeOf(hTrackMouseEvent);
+(*    hTrackMouseEvent.cbSize:=SizeOf(hTrackMouseEvent);
     hTrackMouseEvent.dwFlags:=TME_LEAVE or TME_HOVER;
     hTrackMouseEvent.hwndTrack:=hWindow;
     hTrackMouseEvent.dwHoverTime:=HOVER_DEFAULT;
     if not TrackMouseEvent(hTrackMouseEvent)
-    then wTrackingMouse:=false
+    then wTrackingMouse:=false*)
   end;
-*)
 end;
 
 // custompaint support
@@ -749,8 +766,18 @@ begin
 end;
 
 function TWinHandleImpl.GetCursorPos(var lpPoint: TPoint): BOOLEAN;
+var p:TWinHandleImpl;
 begin
-  //result:=windows.GetCursorPos(lpPoint);
+  p:=wParent;
+  lpPoint.x:=hLeft+lpPoint.x;
+  lpPoint.y:=hTop+lpPoint.y;
+  while p<>nil do begin
+    lpPoint.x:=lpPoint.x+p.hLeft;
+    lpPoint.y:=lpPoint.y+p.hTop;
+    p:=p.wParent;
+  end;
+  result:=true;
+//windows.GetCursorPos(lpPoint);
 end;
 
 function TWinHandleImpl.SetCapture(hWnd: HWND): HWND;
@@ -810,11 +837,12 @@ end;
 procedure TWinHandleImpl.SetFocus;
 //var h:HWND;
 begin
+  XSetInputFocus(display, win, RevertToParent, 0);
 (*  h:=GetFocus;
   if h<>0
   then SendMessage(h, WM_KILLFOCUS, 0, 0);
-  windows.SetFocus(hWindow);
-  SetFocusPerform;*)
+  windows.SetFocus(hWindow);*)
+  SetFocusPerform;
 end;
 
 procedure TWinHandleImpl.SetFocusPerform;
@@ -860,6 +888,7 @@ end;
 procedure TWinHandleImpl.SetCursor;
 begin
   //windows.SetCursor(wCursor);
+  XDefineCursor(display, win, wCursor);
 end;
 
 procedure TWinHandleImpl.CreateModalStyle;
@@ -880,11 +909,12 @@ begin
   modal := XInternAtom(display, '_NET_WM_STATE_MODAL', True);
 
   attr.background_pixel := XWhitePixel(Display, ScreenNum);
+  attr.override_redirect:=1;
 
   Win := XCreateWindow(Display, XRootWindow(Display, ScreenNum),
     hLeft, hTop, hWidth, hHeight, 0,
     DefaultDepth(display,ScreenNum), InputOutput, DefaultVisual(display,ScreenNum),
-    CWBackPixel,
+    CWBackPixel or CWOverrideRedirect,
     @attr);
 
  // wm_delete_window := XInternAtom(display, 'WM_DELETE_WINDOW', true);
@@ -943,6 +973,7 @@ end;
 
 procedure TWinHandleImpl.MouseLeavePerform;
 begin
+  RedrawPerform;
 end;
 
 procedure TWinHandleImpl.MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);

@@ -61,7 +61,6 @@ type
     property Width:integer read hWidth write hWidth;
     property Height:integer read hHeight write hHeight;
     property MinHeight:integer read wMinHeight write wMinHeight;
-    property Cursor:cardinal read wCursor write wCursor;
     property Text:string read wText write wText;
     property Name:string read wName write wName;
     property Style:cardinal read wStyle write wStyle;
@@ -233,6 +232,7 @@ begin
   wTrackingMouse:=false;
   wMouseOverComponent:=false;
   wMouseDown:=false;
+  inherited;
 end;
 
 procedure TWinHandle.MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
