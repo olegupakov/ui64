@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="d:\utils\fpc\lazarus\fpc\3.0.4\bin\x86_64-win64\fpc.exe" Date="1313017496"/>
-  <Params Value=" -Twin64 -MDelphi -Scghi -O1 -g -gl -l -vewnhibq @extrafpc.cfg -Fid:\home\work\tinyvcl\ui64\example\lib\x86_64-win64 -Fud:\utils\fpc\lazarus\lcl\units\x86_64-win64\win32 -Fud:\utils\fpc\lazarus\lcl\units\x86_64-win64 -Fud:\utils\fpc\lazarus\components\lazutils\lib\x86_64-win64 -Fud:\utils\fpc\lazarus\packager\units\x86_64-win64 -Fud:\home\work\tinyvcl\ui64\example\ -FUd:\home\work\tinyvcl\ui64\example\lib\x86_64-win64\ -FEd:\home\work\tinyvcl\ui64\example\ -od:\home\work\tinyvcl\ui64\example\app.exe -dLCL -dLCLwin32 app.dpr"/>
-  <Complete Value="False"/>
-</CONFIG>
