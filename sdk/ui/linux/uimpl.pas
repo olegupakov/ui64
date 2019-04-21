@@ -766,16 +766,21 @@ begin
 end;
 
 function TWinHandleImpl.GetCursorPos(var lpPoint: TPoint): BOOLEAN;
-var p:TWinHandleImpl;
+//var p:TWinHandleImpl;
+var x, y:integer;
+    chld:TWindow;
 begin
-  p:=wParent;
+  XTranslateCoordinates(display, win, XRootWindow(Display, ScreenNum), lpPoint.X, lpPoint.Y, @lpPoint.X, @lpPoint.Y, @chld);
+//  lpPoint.X:=x;
+  //lpPoint.Y:=y;
+(*  p:=wParent;
   lpPoint.x:=hLeft+lpPoint.x;
   lpPoint.y:=hTop+lpPoint.y;
   while p<>nil do begin
     lpPoint.x:=lpPoint.x+p.hLeft;
     lpPoint.y:=lpPoint.y+p.hTop;
     p:=p.wParent;
-  end;
+  end;          *)
   result:=true;
 //windows.GetCursorPos(lpPoint);
 end;
