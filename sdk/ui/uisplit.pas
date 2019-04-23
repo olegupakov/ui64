@@ -2,47 +2,81 @@ unit uisplit;
 
 interface
 
-uses ui, uimpl, uihandle, uicomp;
+uses ui, uimpl, uihandle, uicomp, uipanel;
 
 type
 
   TWinSplit=class(TWinComp)
   private
+    wSplitAlign:TAlign;
+    wWin1, wWin2:TWinComp;
+
     wSplitActive:boolean;
-    last_x_down, last_y_down:integer;
   protected
     procedure SplitterPerform(deltaX,deltaY:integer);
   public
+    constructor Create(Owner:TWinHandle);override;
     procedure CreatePerform;override;
+    procedure SizePerform;override;
     procedure MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);override;
     procedure MouseButtonUpPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);override;
     procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);override;
     procedure MouseLeavePerform;override;
     procedure CapturePerform(AWindow:HWND);override;
+    property SplitAlign:TAlign read wSplitAlign write wSplitAlign;
+    property Win1:TWinComp read wWin1;
+    property Win2:TWinComp read wWin2;
   end;
 
 implementation
 
-procedure TWinSplit.CreatePerform;
+constructor TWinSplit.Create(Owner:TWinHandle);
 begin
   inherited;
   wSplitActive:=false;
-  if (wAlign=alTop)or(wAlign=alBottom)
-  then wCursor:=crSizeNS
-  else wCursor:=crSizeWE;
+  wSplitAlign:=alTop;
+end;
+
+procedure TWinSplit.CreatePerform;
+begin
+  inherited;
+  wWin1:=TWinPanel.Create(self);
+  wWin2:=TWinPanel.Create(self);
+  if (wSplitAlign=alTop)or(wSplitAlign=alBottom)
+  then begin
+    wCursor:=crSizeNS;
+    wWin1.Align:=alTop;
+    wWin2.Align:=alBottom;
+    wWin1.Height:=Height div 2 - 2;
+    wWin2.Height:=Height div 2 - 2;
+  end
+  else begin
+    wCursor:=crSizeWE;
+    wWin1.Align:=alLeft;
+    wWin2.Align:=alRight;
+    wWin1.Width:=Width div 2 - 2;
+    wWin2.Width:=Width div 2 - 2;
+  end;
+  wWin1.CreatePerform;
+  wWin2.CreatePerform;
+end;
+
+procedure TWinSplit.SizePerform;
+begin
+  case wSplitAlign of
+    alTop:wWin2.Height:=Height - wWin1.Height - 4;
+    alBottom:wWin1.Height:=Height - wWin2.Height - 4;
+    alLeft:wWin2.Width:=Width - wWin1.Width - 4;
+    alRight:wWin1.Width:=Width - wWin2.Width - 4;
+  end;
+  inherited;
 end;
 
 procedure TWinSplit.MouseButtonDownPerform(AButton:TMouseButton; AButtonControl:cardinal; x,y:integer);
-var p:tpoint;
 begin
   inherited;
   if (AButton=mbLeft)
   then begin
-    p.x:=x;
-    p.y:=y;
-    GetCursorPos(p);
-    last_x_down:=p.x;
-    last_y_down:=p.y;
     wSplitActive:=true;
     SetCapture(window);
   end;
@@ -67,12 +101,13 @@ begin
   inherited;
   if wSplitActive
   then begin
-    p.x:=x;
-    p.y:=y;
-    GetCursorPos(p);
-    SplitterPerform(last_x_down-p.x, last_y_down-p.y);
-    last_x_down:=p.x;
-    last_y_down:=p.y;
+    case wSplitAlign of
+      alTop:wWin1.Height:=y - 2;
+      alBottom:wWin2.Height:=Height - y - 2;
+      alLeft:wWin1.Width:=x - 2;
+      alRight:wWin2.Width:=Width - x - 2;
+    end;
+    SizePerform;
   end;
 end;
 

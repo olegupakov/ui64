@@ -20,6 +20,7 @@ implementation
 constructor TWinComp.Create(Owner:TWinHandle);
 begin
   inherited Create(Owner);
+  SetBounds(0, 0, Owner.Height, Owner.Width);
   CreateCompStyle;
 end;
 

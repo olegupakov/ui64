@@ -10,6 +10,7 @@ uses SysUtils,
 type
   TAppForm=class(TWinForm)
   private
+    s1:TWinSplit;
     c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c21,c22,c23:TWinHandle;
     c18:TWinList;
     c19:TWinCombo;
@@ -31,6 +32,20 @@ begin
   name:='form1';
   frm:=nil;
 
+  s1:=TWinSplit.Create(self);
+  s1.SplitAlign:=alBottom;
+  s1.Align:=alClient;
+  s1.CreatePerform;
+
+  c3:=TWinButton.Create(s1.Win2);
+ // c3.Color:=clPanelBackground1;//clButtonInactiveBackground;
+  c3.SetBounds(10,10,75,25);
+  c3.Align:=alNone;
+  c3.Text:='Comp 3';
+  c3.OnClick:=Button1Click;
+  c3.CreatePerform;
+
+(*
   c1:=TWinPanel.Create(self);
   c1.Name:='c1';
   c1.SetBounds(10,10,600,550);
@@ -78,7 +93,7 @@ begin
   c18.Items.Add('item11');
   c18.Items.Add('item12');
   c18.Selected:=2;
-
+*)
 
 (*c19:=TWinCombo.Create(c2);
   c19.name:='combo1';
@@ -93,7 +108,7 @@ begin
   c19.Selected:=2;
 *)
 
-
+(*
   c23:=TWinButton.Create(c2);
   c23.Align:=alNone;
   c23.text:='font';
@@ -173,7 +188,7 @@ begin
   c9.SetBounds(10,10,100,25);
   c9.Align:=alNone;
   c9.CreatePerform;
-
+ *)
 
 (*  c15:=TWinPanel.Create(self);
   c15.Name:='c15';
@@ -188,7 +203,8 @@ begin
   c6.Align:=alTop;
   c6.CreatePerform;  *)
 
-  c21:=TWinPanel.Create(self);
+(*
+c21:=TWinPanel.Create(self);
   c21.Name:='c21';
   c21.Color:=clPanelBackground2;
   c21.Height:=45;
@@ -196,14 +212,6 @@ begin
   c21.Align:=alBottom;
   c21.MinHeight:=45;
   c21.CreatePerform;
-
-  c3:=TWinButton.Create(c21);
- // c3.Color:=clPanelBackground1;//clButtonInactiveBackground;
-  c3.SetBounds(10,10,75,25);
-  c3.Align:=alNone;
-  c3.Text:='Comp 3';
-  c3.OnClick:=Button1Click;
-  c3.CreatePerform;
 
   c17:=TWinButton.Create(c21);
  // c17.Color:=clPanelBackground1;//clButtonInactiveBackground;
@@ -238,7 +246,7 @@ begin
   c22.Width:=3;
   c22.Height:=3;
   c22.Align:=alLeft;
-  c22.CreatePerform;
+  c22.CreatePerform;     *)
 end;
 
 procedure TAppForm.Button1Click(Sender:TWinHandle);

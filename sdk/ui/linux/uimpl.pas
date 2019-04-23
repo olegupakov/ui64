@@ -572,7 +572,7 @@ begin
        case Report._type of
          Expose:
            begin
-             Writeln('Expose');
+             //Writeln('Expose');
              if Report.xexpose.count =  0
              then begin
                Obj:=GetWinObj(report.xexpose.window);
@@ -583,13 +583,13 @@ begin
            end;
          ConfigureNotify:
            begin
-             Writeln('Configure Notify');
+             //Writeln('Configure Notify');
              Obj:=GetWinObj(report.xconfigure.window);
              Obj.hWidth := Report.xconfigure.Width;
              Obj.hHeight := Report.xconfigure.Height;
              Obj.SizePerform;
-             Writeln(' Width: ', Obj.hWidth);
-             Writeln(' Height: ', Obj.hHeight);
+             //Writeln(' Width: ', Obj.hWidth);
+             //Writeln(' Height: ', Obj.hHeight);
 (*             if (width <= SizeHints^.min_width) and
                 (Height <= SizeHints^.min_height)
              then
@@ -600,30 +600,30 @@ begin
 
          ButtonPress:
            begin
-             Writeln('ButtonPress ',Report.xbutton.button,' ',Report.xbutton.window);
+             //Writeln('ButtonPress ',Report.xbutton.button,' ',Report.xbutton.window);
              Obj:=GetWinObj(report.xbutton.window);
              MouseCustomProc(Obj, Report._type, Report.xbutton.button, Report.xbutton.x, Report.xbutton.y);
            end;
 
          ButtonRelease:
            begin
-             Writeln('ButtonRelease ',Report.xbutton.button,' ',Report.xbutton.window);
+             //Writeln('ButtonRelease ',Report.xbutton.button,' ',Report.xbutton.window);
              Obj:=GetWinObj(report.xbutton.window);
              MouseCustomProc(Obj, Report._type, Report.xbutton.button, Report.xbutton.x, Report.xbutton.y);
            end;
          LeaveNotify:begin
-           writeln('mouse leave');
+           //writeln('mouse leave');
            Obj:=GetWinObj(report.xmotion.window);
            Obj.MouseLeavePerform;
          end;
          MotionNotify:begin
-           writeln('mouse move',report.xmotion.x,' ',report.xmotion.y);
+           //writeln('mouse move',report.xmotion.x,' ',report.xmotion.y);
            Obj:=GetWinObj(report.xmotion.window);
            Obj.MouseMovePerform(0,report.xmotion.x,report.xmotion.y);
          end;
          KeyPress:
            begin
-             Writeln('KeyProcess');
+             //Writeln('KeyProcess');
              case report.xkey.keycode of
                22:k:=8; // vk_back
                else k:=XLookupKeysym(@report.xkey, 0);
@@ -766,21 +766,28 @@ begin
 end;
 
 function TWinHandleImpl.GetCursorPos(var lpPoint: TPoint): BOOLEAN;
-//var p:TWinHandleImpl;
-var x, y:integer;
-    chld:TWindow;
+var p:TWinHandleImpl;
+var rx, ry, x, y, m:integer;
+    chld, root:TWindow;
 begin
-  XTranslateCoordinates(display, win, XRootWindow(Display, ScreenNum), lpPoint.X, lpPoint.Y, @lpPoint.X, @lpPoint.Y, @chld);
-//  lpPoint.X:=x;
-  //lpPoint.Y:=y;
-(*  p:=wParent;
+//  disp:=display^;
+//  root:=XRootWindow(Display, ScreenNum);
+//  chld:=win;
+  XQueryPointer(display, win, @root, @chld, @rx, @ry, @x, @y, @m);
+
+// XTranslateCoordinates(display, win, XRootWindow(Display, ScreenNum), lpPoint.X, lpPoint.Y, @x, @y, @chld);
+  lpPoint.X:=rx;
+  lpPoint.Y:=ry;
+  writeln('get ',rX,' ',rY,' ',X,' ',Y);
+(*
+  p:=wParent;
   lpPoint.x:=hLeft+lpPoint.x;
   lpPoint.y:=hTop+lpPoint.y;
   while p<>nil do begin
     lpPoint.x:=lpPoint.x+p.hLeft;
     lpPoint.y:=lpPoint.y+p.hTop;
     p:=p.wParent;
-  end;          *)
+  end;         *)
   result:=true;
 //windows.GetCursorPos(lpPoint);
 end;
@@ -788,11 +795,17 @@ end;
 function TWinHandleImpl.SetCapture(hWnd: HWND): HWND;
 begin
  // result:=windows.SetCapture(hWnd);
+  XGrabPointer(display, win, false,
+                PointerMotionMask or LeaveWindowMask or ButtonReleaseMask,
+                GrabModeAsync, GrabModeAsync, win, none, CurrentTime);
+  result:=win;
 end;
 
 function TWinHandleImpl.ReleaseCapture: BOOLEAN;
 begin
  // result:=windows.ReleaseCapture;
+  XUngrabPointer(display, CurrentTime);
+  result:=true
 end;
 
 function TWinHandleImpl.ShowModalWindow:integer;
