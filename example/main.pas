@@ -45,28 +45,14 @@ begin
   c3.OnClick:=Button1Click;
   c3.CreatePerform;
 
-(*
-  c1:=TWinPanel.Create(self);
-  c1.Name:='c1';
-  c1.SetBounds(10,10,600,550);
-  c1.Align:=alNone;
-  c1.CreatePerform;
-
-  c2:=TWinPanel.Create(c1);
-  c2.Name:='c2';
-  c2.SetBounds(20,20,300,250);
-  c2.Align:=alLeft;
-  c2.CreatePerform;
-
-
-  c4:=TWinLabel.Create(c2);
+  c4:=TWinLabel.Create(s1.win1);
   c4.Color:=clBlack;
   c4.Text:='Label 1';
   c4.SetBounds(10,10,10,10);
   c4.Align:=alNone;
   c4.CreatePerform;
 
-  c5:=TWinEdit.Create(c2);
+  c5:=TWinEdit.Create(s1.win1);
   c5.name:='edit1';
   c5.Color:=clBlack;
   c5.Text:='Edit1';
@@ -74,7 +60,7 @@ begin
   c5.Align:=alNone;
   c5.CreatePerform;
 
-  c18:=TWinList.Create(c2);
+  c18:=TWinList.Create(s1.win1);
   c18.name:='list1';
   c18.Color:=clBlack;
   c18.SetBounds(10,75,200,135);
@@ -93,22 +79,35 @@ begin
   c18.Items.Add('item11');
   c18.Items.Add('item12');
   c18.Selected:=2;
-*)
 
-(*c19:=TWinCombo.Create(c2);
-  c19.name:='combo1';
-  c19.Color:=clBlack;
-  c19.SetBounds(10,215,200,25);
-  c19.Align:=alNone;
-  c19.CreatePerform;
-  c19.Items.Add('item 1');
-  c19.Items.Add('item 2');
-  c19.Items.Add('item 3');
-  c19.Items.Add('item 4');
-  c19.Selected:=2;
-*)
+//(*
+c19:=TWinCombo.Create(s1.win2);
+    c19.name:='combo1';
+    c19.Color:=clBlack;
+    c19.SetBounds(10,215,200,25);
+    c19.Align:=alNone;
+    c19.CreatePerform;
+    c19.Items.Add('item 1');
+    c19.Items.Add('item 2');
+    c19.Items.Add('item 3');
+    c19.Items.Add('item 4');
+    c19.Selected:=2;
+//*)
 
 (*
+  c1:=TWinPanel.Create(self);
+  c1.Name:='c1';
+  c1.SetBounds(10,10,600,550);
+  c1.Align:=alNone;
+  c1.CreatePerform;
+
+  c2:=TWinPanel.Create(c1);
+  c2.Name:='c2';
+  c2.SetBounds(20,20,300,250);
+  c2.Align:=alLeft;
+  c2.CreatePerform;
+
+
   c23:=TWinButton.Create(c2);
   c23.Align:=alNone;
   c23.text:='font';

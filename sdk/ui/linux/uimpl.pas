@@ -674,11 +674,13 @@ end;
 
 procedure TWinHandleImpl.Show(nCmdShow:integer=SW_SHOWNORMAL);
 begin
+  XMapWindow(Display, Win);
 //  ShowWindow(hWindow, nCmdShow);
 end;
 
 procedure TWinHandleImpl.Hide;
 begin
+  XUnMapWindow(Display, Win);
 //  Show(SW_HIDE)
 end;
 

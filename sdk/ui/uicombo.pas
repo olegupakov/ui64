@@ -76,6 +76,7 @@ end;
 procedure TWinCombo.CreatePerform;
 begin
   inherited;
+  ComboList.SetBounds(50,50,300,300);
   ComboList.CreatePerform;
   ComboList.wItems.OnSelected:=ListSelected;
 end;
@@ -101,12 +102,13 @@ begin
   inherited;
   if AButton=mbLeft
   then begin
+    p.x:=0;
+    p.y:=0;
     GetCursorPos(p);
     ComboList.SetBounds(p.x-x,p.y-y+height,width,150);
     ComboList.SetPosPerform;
     ComboList.SizePerform;
-    ComboList.Show;
-    SetFocus;
+    combolist.Show;
   end
 end;
 
@@ -127,7 +129,7 @@ begin
   text:=L.Items[L.Selected];
   RedrawPerform;
   ComboList.hide;
-  SetFocus;
+//  SetFocus;
 end;
 
 end.
