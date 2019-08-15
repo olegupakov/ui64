@@ -188,6 +188,7 @@ type
     procedure CustomImagePaint;
     procedure SetCursor;
 
+    procedure EventPerform(AMessage: UINT; WParam : WPARAM; LParam: LPARAM);virtual;
     procedure SizePerform;virtual;
     procedure MouseMovePerform(AButtonControl:cardinal; x,y:integer);virtual;
     procedure MouseWheelPerform(AButtonControl:cardinal; deltawheel:integer; x, y:integer);virtual;
@@ -321,6 +322,7 @@ begin
   frm:=GetWindowLongPtr(hWindow, GWL_USERDATA);
   if frm<>nil
   then begin
+    frm.EventPerform(AMessage, WParam, LParam);
     if MouseCustomProc(frm, AMessage, WParam, LParam)
     then exit;
     case AMessage of
@@ -877,6 +879,10 @@ begin
   EndPaint;
   AWidth:=r.Right;
   AHeight:=r.Bottom;
+end;
+
+procedure TWinHandleImpl.EventPerform;
+begin
 end;
 
 end.
